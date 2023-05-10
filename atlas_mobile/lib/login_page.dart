@@ -1,29 +1,7 @@
+import 'package:atlas_mobile/bottom_page';
+import 'package:atlas_mobile/controllers/user_controller.dart';
 import 'package:flutter/material.dart';
 
-// Model class
-class LoginModel {
-  String email = '';
-  String password = '';
-}
-
-// Controller class
-class LoginController {
-  final LoginModel model = LoginModel();
-
-  void setEmail(String value) {
-    model.email = value;
-  }
-
-  void setPassword(String value) {
-    model.password = value;
-  }
-
-  bool validateForm() {
-    return model.email.isNotEmpty && model.password.isNotEmpty;
-  }
-}
-
-// View class
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
@@ -34,11 +12,16 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
 
-  final LoginController controller = LoginController();
+  final UserController controller = UserController();
 
   void _submitForm() {
     if (_formKey.currentState!.validate() && controller.validateForm()) {
       // Navigate to new screen if successful
+    Navigator.pushReplacement(
+  context,
+   MaterialPageRoute(builder: (context) => BottomPage()),
+    );
+    
     }
   }
 

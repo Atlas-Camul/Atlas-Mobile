@@ -6,14 +6,12 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-     
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const CircleAvatar(
               radius: 50.0,
-              
             ),
             const SizedBox(height: 20.0),
             const Text(
@@ -35,6 +33,7 @@ class ProfilePage extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 // Handle sign out here
+                Navigator.pushReplacementNamed(context, '/login');
               },
               child: const Text('Sign Out'),
             ),

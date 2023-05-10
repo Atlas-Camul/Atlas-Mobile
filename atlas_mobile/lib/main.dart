@@ -19,6 +19,20 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      
+      initialRoute: '/',
+      
+      routes: {
+        
+        '/profile': (context) => ProfilePage(),
+        '/login': (context) => LoginPage(),
+      },
+      
+      
+      
+      
+      
+      
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -31,7 +45,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: BeaconPage(),
+      home: LoginPage(),
     );
   }
 }
