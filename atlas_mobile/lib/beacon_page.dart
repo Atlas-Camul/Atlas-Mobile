@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class BeaconPage extends StatefulWidget {
   @override
@@ -7,26 +8,37 @@ class BeaconPage extends StatefulWidget {
 }
 
 class _BeaconPageState extends State<BeaconPage> {
-  FlutterBluePlus flutterBlue = FlutterBluePlus.instance;
-  List<ScanResult> scanResults = [];
+  FlutterBluePlus _flutterBlue = FlutterBluePlus.instance;
+  List<ScanResult> _scanResults = [];
+  bool _isScanning = false;
 
   @override
   void initState() {
     super.initState();
-    _startScanning();
+    _checkPermissions();
   }
 
-  @override
-  void dispose() {
-    flutterBlue.stopScan();
-    super.dispose();
+  Future<void> _checkPermissions() async {
+    var status = await Permission.location.status;
+    if (status != PermissionStatus.granted) {
+      await Permission.location.request();
+    }
+    _startScan();
   }
 
-  void _startScanning() {
-    flutterBlue.scan().listen((scanResult) {
+  void _startScan() {
+    if (_isScanning) {
+      return;
+    }
+    _isScanning = true;
+    _scanResults.clear(); // Reset the list before starting a new scan
+    _flutterBlue.scan(timeout: Duration(seconds: 5)).listen((scanResult) {
       setState(() {
-        // Update the list of scan results
-        scanResults.add(scanResult);
+        _scanResults.add(scanResult);
+      });
+    }).onDone(() {
+      setState(() {
+        _isScanning = false;
       });
     });
   }
@@ -37,33 +49,31 @@ class _BeaconPageState extends State<BeaconPage> {
       appBar: AppBar(
         title: Text('Beacon Page'),
       ),
-      body: ListView.builder(
-        itemCount: scanResults.length,
-        itemBuilder: (BuildContext context, int index) {
-          var scanResult = scanResults[index];
-          var name = scanResult.device.name;
-          var uuid = scanResult.device.id.toString();
-          var rssi = scanResult.rssi.toString();
-          var manufacturerData = scanResult.advertisementData.manufacturerData;
-          var data = '';
-          if (manufacturerData.isNotEmpty) {
-            data = manufacturerData.entries
-                .map((entry) => '${entry.key}: ${entry.value}\n')
-                .join();
-          }
-
-          return ListTile(
-            title: Text(name ?? 'Unknown device'),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('UUID: $uuid'),
-                Text('RSSI: $rssi dBm'),
-                Text('Data: $data'),
-              ],
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextButton(
+              child: Text(_isScanning ? 'Scanning...' : 'Start Scan'),
+              onPressed: _startScan,
             ),
-          );
-        },
+            SizedBox(height: 20),
+            Expanded(
+              child: ListView.builder(
+                itemCount: _scanResults.length,
+                itemBuilder: (context, index) {
+                  var result = _scanResults[index];
+                  return ListTile(
+                    title: Text(result.device.name ?? 'Unknown'),
+                    subtitle: Text(
+                      'RSSI: ${result.rssi} dBm\nMAC: ${result.device.id}',
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
