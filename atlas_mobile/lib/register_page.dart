@@ -1,3 +1,4 @@
+import 'package:atlas_mobile/bottom_page';
 import 'package:flutter/material.dart';
 import 'package:atlas_mobile/controllers/user_controller.dart';
 
@@ -14,13 +15,17 @@ class _RegisterPageState extends State<RegisterPage> {
 
   final UserController _controller = UserController();
 
-  void _submitForm() {
+  void _submitForm() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      _controller.registerUser();
+      bool registered = await _controller.registerUser();
+      if (registered) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => BottomPage()),
+        );
+      }
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
