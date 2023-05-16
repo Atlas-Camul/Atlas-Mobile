@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:atlas_mobile/controllers/beacon_controller.dart';
+import 'package:atlas_mobile/db/db_settings.dart';
+import 'package:atlas_mobile/beacon_details_page.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class BeaconPage extends StatefulWidget {
   @override
@@ -8,39 +10,21 @@ class BeaconPage extends StatefulWidget {
 }
 
 class _BeaconPageState extends State<BeaconPage> {
-  FlutterBluePlus _flutterBlue = FlutterBluePlus.instance;
-  List<ScanResult> _scanResults = [];
-  bool _isScanning = false;
+  BeaconController _beaconController = BeaconController();
 
   @override
   void initState() {
     super.initState();
-    _checkPermissions();
+    _beaconController.checkPermissions();
   }
 
-  Future<void> _checkPermissions() async {
-    var status = await Permission.location.status;
-    if (status != PermissionStatus.granted) {
-      await Permission.location.request();
-    }
-    _startScan();
-  }
-
-  void _startScan() {
-    if (_isScanning) {
-      return;
-    }
-    _isScanning = true;
-    _scanResults.clear(); // Reset the list before starting a new scan
-    _flutterBlue.scan(timeout: Duration(seconds: 5)).listen((scanResult) {
-      setState(() {
-        _scanResults.add(scanResult);
-      });
-    }).onDone(() {
-      setState(() {
-        _isScanning = false;
-      });
-    });
+  void _navigateToBeaconDetailsPage(ScanResult scanResult) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => BeaconDetailsPage(scanResult: scanResult),
+      ),
+    );
   }
 
   @override
@@ -54,20 +38,30 @@ class _BeaconPageState extends State<BeaconPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextButton(
-              child: Text(_isScanning ? 'Scanning...' : 'Start Scan'),
-              onPressed: _startScan,
+              child: Text(_beaconController.isScanning ? 'Scanning...' : 'Start Scan'),
+              onPressed: () {
+                if (_beaconController.isScanning) {
+                  _beaconController.stopScan();
+                } else {
+                  _beaconController.startScan();
+                }
+                setState(() {});
+              },
             ),
             SizedBox(height: 20),
             Expanded(
               child: ListView.builder(
-                itemCount: _scanResults.length,
+                itemCount: _beaconController.scanResults.length,
                 itemBuilder: (context, index) {
-                  var result = _scanResults[index];
+                  var result = _beaconController.scanResults[index];
                   return ListTile(
                     title: Text(result.device.name ?? 'Unknown'),
                     subtitle: Text(
                       'RSSI: ${result.rssi} dBm\nMAC: ${result.device.id}',
                     ),
+                    onTap: () {
+                      _navigateToBeaconDetailsPage(result);
+                    },
                   );
                 },
               ),

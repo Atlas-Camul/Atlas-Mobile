@@ -80,15 +80,11 @@ class UserController {
     );
 
 
-  
-
-
 
     // Close the database connection
     await conn.close();
 
     
-
 // If user exists, store user data in shared preferences
     if (results.first['count'] == 1) {
       final prefs = await SharedPreferences.getInstance();
@@ -116,13 +112,6 @@ class UserController {
   }
 
 
-
-
-
-
-
-
-
   void setEmail(String value) {
     user.email = value;
   }
@@ -134,9 +123,5 @@ class UserController {
   bool validateForm() {
     return user.email.isNotEmpty && user.password.isNotEmpty;
   }
-
-
-
-
 
 }
