@@ -5,7 +5,7 @@ import 'package:atlas_mobile/diary_page.dart';
 import 'package:atlas_mobile/register_page.dart';
 import 'package:flutter/material.dart';
 import 'package:atlas_mobile/login_page.dart';
-import 'package:atlas_mobile/bottom_page';
+import 'bottom_page';
 import 'package:atlas_mobile/profile_page.dart';
 import 'package:atlas_mobile/test_page.dart';
 
@@ -47,7 +47,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: DiaryPage(),
+      home: LoginPage(),
     );
   }
 }

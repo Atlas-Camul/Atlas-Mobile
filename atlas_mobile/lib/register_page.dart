@@ -1,7 +1,8 @@
-import 'package:atlas_mobile/bottom_page';
+
 import 'package:flutter/material.dart';
 import 'package:atlas_mobile/controllers/user_controller.dart';
 
+import 'package:atlas_mobile/bottom_page';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
@@ -21,7 +22,7 @@ class _RegisterPageState extends State<RegisterPage> {
       bool registered = await _controller.registerUser();
       if (registered) {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => BottomPage()),
+          MaterialPageRoute(builder: (context) => const BottomPage()),
         );
       }
     }

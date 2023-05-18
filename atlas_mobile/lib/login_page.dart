@@ -1,7 +1,7 @@
-import 'package:atlas_mobile/bottom_page.dart';
 import 'package:atlas_mobile/controllers/user_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:mysql1/mysql1.dart';
+import 'package:atlas_mobile/bottom_page';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -15,12 +15,15 @@ class _LoginPageState extends State<LoginPage> {
 
   final UserController controller = UserController();
 
+  String? email;
+  String? password;
+
   void _submitForm() async {
-    if (_formKey.currentState!.validate() && controller.validateForm()) {
+    if (_formKey.currentState?.validate() == true && controller.validateForm() == true) {
       // Check if user exists in the database
       final userExists = await controller.loginUser(
-        controller.user.email,
-        controller.user.password,
+        email ?? '',
+        password ?? '',
       );
 
       // Navigate to new screen if successful
@@ -40,6 +43,22 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  String? validateEmail(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter an email';
+    }
+    // You can add more email validation logic here if needed
+    return null;
+  }
+
+  String? validatePassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter a password';
+    }
+    // You can add more password validation logic here if needed
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,76 +74,92 @@ class _LoginPageState extends State<LoginPage> {
         ),
         child: Padding(
           padding: EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                'assets/images/logo.png',
-                width: 301,
-                height: 198,
-                fit: BoxFit.fitWidth,
-              ),
-              SizedBox(height: 32),
-              TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  labelStyle: TextStyle(color: Colors.white),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(
+                  'assets/images/logo.png',
+                  width: 301,
+                  height: 198,
+                  fit: BoxFit.fitWidth,
                 ),
-                style: TextStyle(color: Colors.white),
-              ),
-              SizedBox(height: 16),
-              TextFormField(
-                obscureText: true,
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  labelStyle: TextStyle(color: Colors.white),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                style: TextStyle(color: Colors.white),
-              ),
-              SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  InkWell(
-                    onTap: () {},
-                    child: Text(
-                      'Don\'t have an account?',
-                      style: TextStyle(color: Colors.white, fontSize: 14),
+                SizedBox(height: 32),
+                TextFormField(
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    labelStyle: TextStyle(color: Colors.white),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                      borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  ElevatedButton(
-                    onPressed: () {},
-                    child: Text(
-                      'Login',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: TextStyle(color: Colors.white),
+                  validator: validateEmail,
+                  onChanged: (value) {
+                    setState(() {
+                      email = value;
+                    });
+                  },
+                ),
+                SizedBox(height: 16),
+                TextFormField(
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    labelStyle: TextStyle(color: Colors.white),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.white,
-                      padding: EdgeInsets.symmetric(horizontal: 24),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(50),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  style: TextStyle(color: Colors.white),
+                  validator: validatePassword,
+                  onChanged: (value) {
+                    setState(() {
+                      password = value;
+                    });
+                  },
+                ),
+                SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    InkWell(
+                      onTap: () {},
+                      child: Text(
+                        'Don\'t have an account?',
+                        style: TextStyle(color: Colors.white, fontSize: 14),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                    TextButton(
+                      onPressed: _submitForm,
+                      child: Text(
+                        'Login',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      style: TextButton.styleFrom(
+                        primary: Colors.white,
+                        backgroundColor: Colors.transparent,
+                        padding: EdgeInsets.symmetric(horizontal: 24),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(50),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
