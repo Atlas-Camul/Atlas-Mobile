@@ -1,11 +1,11 @@
-// View class
 import 'package:flutter/material.dart';
-import 'package:atlas_mobile/model/diary_entry.dart';
-import 'package:atlas_mobile/controllers/diary_controller.dart';
+import 'package:flutter_sound/flutter_sound.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'package:just_audio/just_audio.dart';
-import 'package:flutter/services.dart';
+import 'package:atlas_mobile/model/diary_entry.dart';
+import 'package:atlas_mobile/controllers/diary_controller.dart';
+import 'package:permission_handler/permission_handler.dart';
+
 class DiaryPage extends StatefulWidget {
   const DiaryPage({Key? key}) : super(key: key);
 
@@ -13,44 +13,110 @@ class DiaryPage extends StatefulWidget {
   _DiaryPageState createState() => _DiaryPageState();
 }
 
-
-
-
-
-
-
-
-
 class _DiaryPageState extends State<DiaryPage> {
   final DiaryController _controller = DiaryController();
   final TextEditingController _textEditingController = TextEditingController();
   File? _image;
 
-  
-  
-  
+  FlutterSoundRecorder? _audioRecorder;
+  FlutterSoundPlayer? _audioPlayer;
+  String _audioPath = '';
+  bool _isRecording = false;
 
-    // Adds a new entry to the diary
- void _addEntry() {
-  final text = _textEditingController.text;
-  if (text.isNotEmpty) {
-    final entry = DiaryEntry(
-      id: DateTime.now().toString(),
-      text: text,
-      image: _image,
-      //audioPath: _audioPlayer.sequence?.isEmpty ?? true ? null : _audioPlayer.sequence!.first.tag as String?,
-      createdAt: DateTime.now(),
-    );
-    setState(() {
-      _controller.addEntry(entry);
-      _textEditingController.clear();
-      _image = null;
-      //_audioPlayer.stop();
-      //_isRecording = false;
-    });
+  @override
+  void initState() {
+    super.initState();
+    _audioRecorder = FlutterSoundRecorder();
+    _audioPlayer = FlutterSoundPlayer();
+    _initAudioRecorder();
   }
-}
 
+  @override
+  void dispose() {
+    _audioRecorder?.closeRecorder();
+    _audioPlayer?.closePlayer();
+    super.dispose();
+  }
+
+  Future<void> _initAudioRecorder() async {
+    await _audioRecorder?.openRecorder();
+  }
+
+  Future<void> _requestPermission() async {
+    final status = await Permission.microphone.request();
+    if (status.isGranted) {
+      _toggleRecording();
+    } else {
+      print('Permission denied.');
+    }
+  }
+
+  void _toggleRecording() async {
+    if (!_isRecording) {
+      try {
+        await _audioRecorder?.startRecorder(
+          toFile: 'audio_recording.aac',
+          codec: Codec.aacADTS,
+        );
+        setState(() {
+          _audioPath = '';
+          _isRecording = true;
+        });
+      } catch (e) {
+        print('Failed to start recording: $e');
+      }
+    } else {
+      try {
+        final audioPath = await _audioRecorder?.stopRecorder();
+        setState(() {
+          _audioPath = audioPath ?? '';
+          _isRecording = false;
+        });
+      } catch (e) {
+        print('Failed to stop recording: $e');
+      }
+    }
+  }
+
+  void _playRecording() async {
+    try {
+      await _audioPlayer?.openPlayer();
+      await _audioPlayer?.startPlayer(
+        fromURI: _audioPath,
+        codec: Codec.aacADTS,
+      );
+    } catch (e) {
+      print('Failed to play recording: $e');
+    }
+  }
+
+  void _stopPlayback() async {
+    try {
+      await _audioPlayer?.stopPlayer();
+    } catch (e) {
+      print('Failed to stop playback: $e');
+    }
+  }
+
+  // Adds a new entry to the diary
+  void _addEntry() {
+    final text = _textEditingController.text;
+    if (text.isNotEmpty) {
+      final entry = DiaryEntry(
+        id: DateTime.now().toString(),
+        text: text,
+        image: _image,
+        audioPath: _audioPath.isNotEmpty ? _audioPath : null,
+        createdAt: DateTime.now(),
+      );
+      setState(() {
+        _controller.addEntry(entry);
+        _textEditingController.clear();
+        _image = null;
+        _audioPath = '';
+      });
+    }
+  }
 
   // Allows the user to pick an image from the gallery
   Future<void> _pickImage() async {
@@ -64,28 +130,13 @@ class _DiaryPageState extends State<DiaryPage> {
     }
   }
 
+  bool _showMediaOptions = false;
 
-
-
-
-
- 
- bool _showMediaOptions = false;
- 
- 
-   void _toggleMediaOptions() {
+  void _toggleMediaOptions() {
     setState(() {
       _showMediaOptions = !_showMediaOptions;
     });
   }
-
-
-
-
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -113,6 +164,7 @@ class _DiaryPageState extends State<DiaryPage> {
                   hintText: 'Write your diary entry here...',
                   border: InputBorder.none,
                 ),
+                controller: _textEditingController,
               ),
             ),
             SizedBox(height: 16),
@@ -138,21 +190,31 @@ class _DiaryPageState extends State<DiaryPage> {
                       ),
                       _buildMediaButton(
                         icon: Icons.mic,
-                        text: 'Voice',
-                        onTap: () {},
+                        text: _isRecording ? 'Stop' : 'Record',
+                        onTap: _requestPermission,
                       ),
                     ],
                   )
                 : Container(),
-            
-            
-            
-            
-            
-    
+            SizedBox(height: 16),
+            _audioPath.isNotEmpty
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.play_arrow),
+                        onPressed: _playRecording,
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.stop),
+                        onPressed: _stopPlayback,
+                      ),
+                    ],
+                  )
+                : Container(),
             SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: _addEntry,
               child: Text('Save Entry'),
             ),
           ],
@@ -177,17 +239,4 @@ class _DiaryPageState extends State<DiaryPage> {
       ),
     );
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
