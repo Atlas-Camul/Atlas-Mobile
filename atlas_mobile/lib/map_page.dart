@@ -53,69 +53,69 @@ class _MapPageState extends State<MapPage> {
 
     return Scaffold(
         body: Padding(
-          padding: const EdgeInsets.all(8),
-          child: FutureBuilder<List<Polyline>>(
-            future: polylines,
-            builder:
-                (BuildContext context, AsyncSnapshot<List<Polyline>> snapshot) {
-              debugPrint('snapshot: ${snapshot.hasData}');
-              if (snapshot.hasData) {
-                return Column(
-                  children: [
-                    Flexible(
-                      child: FlutterMap(
-                        options: MapOptions(
-                          center: LatLng(41.178249,-8.607849),
-                          zoom: 16,
-                          onTap: (tapPosition, point) {
-                            setState(() {
-                              debugPrint('onTap');
-                              polylines = getPolylines();
-                            });
-                          },
-                        ),
-                        children: [
-                          TileLayer(
-                            urlTemplate:
-                                'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                            userAgentPackageName:
-                                'dev.fleaflet.flutter_map.example',
-                          ),
-                          PolylineLayer(
-                            polylines: [
-                              Polyline(
-                                  points: points,
-                                  strokeWidth: 4,
-                                  color: Colors.purple),
+      padding: const EdgeInsets.all(8),
+      child: FutureBuilder<List<Polyline>>(
+        future: polylines,
+        builder:
+            (BuildContext context, AsyncSnapshot<List<Polyline>> snapshot) {
+          debugPrint('snapshot: ${snapshot.hasData}');
+          if (snapshot.hasData) {
+            return Column(
+              children: [
+                Flexible(
+                  child: FlutterMap(
+                    options: MapOptions(
+                      center: LatLng(41.178249, -8.607849),
+                      zoom: 16,
+                      onTap: (tapPosition, point) {
+                        setState(() {
+                          debugPrint('onTap');
+                          polylines = getPolylines();
+                        });
+                      },
+                    ),
+                    children: [
+                      TileLayer(
+                        urlTemplate:
+                            'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        userAgentPackageName:
+                            'dev.fleaflet.flutter_map.example',
+                      ),
+                      PolylineLayer(
+                        polylines: [
+                          Polyline(
+                              points: points,
+                              strokeWidth: 4,
+                              color: Colors.purple),
+                        ],
+                      ),
+                      PolylineLayer(
+                        polylines: [
+                          Polyline(
+                            points: pointsGradient,
+                            strokeWidth: 4,
+                            gradientColors: [
+                              const Color(0xffE40203),
+                              const Color(0xffFEED00),
+                              const Color(0xff007E2D),
                             ],
-                          ),
-                          PolylineLayer(
-                            polylines: [
-                              Polyline(
-                                points: pointsGradient,
-                                strokeWidth: 4,
-                                gradientColors: [
-                                  const Color(0xffE40203),
-                                  const Color(0xffFEED00),
-                                  const Color(0xff007E2D),
-                                ],
-                              ),
-                            ],
-                          ),
-                          PolylineLayer(
-                            polylines: snapshot.data!,
-                            polylineCulling: true,
                           ),
                         ],
                       ),
-                    ),
-                  ],
-                );
-              }
-              return const Text(
-                  'Getting map data...\n\nTap on map when complete to refresh map data.');
-            },
-          ),
-        ));
+                      PolylineLayer(
+                        polylines: snapshot.data!,
+                        polylineCulling: true,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          }
+          return const Text(
+              'Getting map data...\n\nTap on map when complete to refresh map data.');
+        },
+      ),
+    ));
   }
 }

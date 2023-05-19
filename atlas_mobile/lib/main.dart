@@ -5,9 +5,13 @@ import 'package:atlas_mobile/diary_page.dart';
 import 'package:atlas_mobile/register_page.dart';
 import 'package:flutter/material.dart';
 import 'package:atlas_mobile/login_page.dart';
+import 'package:atlas_mobile/map_page.dart';
+import 'package:atlas_mobile/google_maps_page.dart';
 import 'bottom_page';
 import 'package:atlas_mobile/profile_page.dart';
 import 'package:atlas_mobile/test_page.dart';
+
+import 'map_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -21,20 +25,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      
       initialRoute: '/',
-      
       routes: {
-        
         '/profile': (context) => ProfilePage(),
         '/login': (context) => LoginPage(),
       },
-      
-      
-      
-      
-      
-      
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -47,7 +42,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: LoginPage(),
+      home: GoogleMapsPage(),
     );
   }
 }
