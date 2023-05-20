@@ -1,4 +1,5 @@
 import 'package:atlas_mobile/controllers/user_controller.dart';
+import 'package:atlas_mobile/register_page.dart';
 import 'package:flutter/material.dart';
 import 'package:mysql1/mysql1.dart';
 import 'package:atlas_mobile/bottom_page';
@@ -58,6 +59,13 @@ class _LoginPageState extends State<LoginPage> {
     // You can add more password validation logic here if needed
     return null;
   }
+    void _openRegisterPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => RegisterPage()),
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -135,7 +143,7 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     InkWell(
-                      onTap: () {},
+                      onTap:_openRegisterPage,
                       child: Text(
                         'Don\'t have an account?',
                         style: TextStyle(color: Colors.white, fontSize: 14),
