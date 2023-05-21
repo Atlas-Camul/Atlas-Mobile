@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:atlas_mobile/beacon_page.dart';
 import 'package:atlas_mobile/profile_page.dart';
-
+import 'package:atlas_mobile/login_page.dart';
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -99,6 +99,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/profile': (context) => ProfilePage(),
         '/beacon': (context) => BeaconPage(),
+        '/login': (context) => LoginPage(),
       },
       theme: ThemeData(
         primarySwatch: Colors.blue,
