@@ -3,7 +3,7 @@ import 'package:atlas_mobile/register_page.dart';
 import 'package:flutter/material.dart';
 import 'package:mysql1/mysql1.dart';
 import 'package:atlas_mobile/bottom_page';
-
+import 'package:shared_preferences/shared_preferences.dart';
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
@@ -19,19 +19,20 @@ class _LoginPageState extends State<LoginPage> {
   String? email;
   String? password;
 
-  void _submitForm() async {
-    if (_formKey.currentState?.validate() == true && controller.validateForm() == true) {
+ void _submitForm() async {
+  if (_formKey.currentState?.validate() == true && controller.validateForm() == true) {
+    try {
       // Check if user exists in the database
       final userExists = await controller.loginUser(
-        email ?? '',
-        password ?? '',
+        controller.user.email,
+        controller.user.password,
       );
 
       // Navigate to new screen if successful
       if (userExists) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => BottomPage()),
+          MaterialPageRoute(builder: (context) => const BottomPage()),
         );
       } else {
         // Show error message if user does not exist
@@ -41,8 +42,12 @@ class _LoginPageState extends State<LoginPage> {
           ),
         );
       }
+    } catch (e) {
+      print('Error during login: $e');
     }
   }
+}
+
 
   String? validateEmail(String? value) {
     if (value == null || value.isEmpty) {
@@ -111,7 +116,7 @@ class _LoginPageState extends State<LoginPage> {
                   validator: validateEmail,
                   onChanged: (value) {
                     setState(() {
-                      email = value;
+                     controller.setEmail(value);
                     });
                   },
                 ),
@@ -134,7 +139,7 @@ class _LoginPageState extends State<LoginPage> {
                   validator: validatePassword,
                   onChanged: (value) {
                     setState(() {
-                      password = value;
+                      controller.setPassword(value);
                     });
                   },
                 ),

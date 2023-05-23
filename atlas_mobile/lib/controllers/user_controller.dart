@@ -16,8 +16,12 @@ class UserController {
     await prefs.setString('name', user.name);
     await prefs.setString('email', user.email);
     await prefs.setString('password', user.password);
-
- 
+  
+    // Check MySQL connection
+    final isConnected = await checkMySQLConnection();
+    if (!isConnected) {
+      throw Exception('Failed to connect to MySQL');
+    }
  
  // Connect to the database
     final conn = await MySqlConnection.connect(
@@ -49,7 +53,7 @@ class UserController {
     // Insert the user into the database
 
     await conn.query(
-      'INSERT INTO user (name, email, password,phone,ID) VALUES (?, ?, ?)',
+      'INSERT INTO user (name, email, password) VALUES (?, ?, ?)',
       [user.name, user.email, user.password],
     );
  
@@ -72,7 +76,7 @@ class UserController {
         useSSL: DbSettings.useSSL,
       ),
     );
-
+     print('User logged:${user.email}, ${user.password}');
     // Check if the user exists in the database
     final results = await conn.query(
       'SELECT COUNT(*) AS count FROM user WHERE email = ? AND password = ?',
@@ -83,7 +87,7 @@ class UserController {
 
     // Close the database connection
     await conn.close();
-
+    
     
 // If user exists, store user data in shared preferences
     if (results.first['count'] == 1) {
@@ -123,5 +127,40 @@ class UserController {
   bool validateForm() {
     return user.email.isNotEmpty && user.password.isNotEmpty;
   }
+
+
+
+ Future<bool> checkMySQLConnection() async {
+    try {
+      final conn = await MySqlConnection.connect(
+        ConnectionSettings(
+          host: DbSettings.host,
+          port: DbSettings.port,
+          db: DbSettings.dbName,
+          user: DbSettings.user,
+          password: DbSettings.password,
+          useSSL: DbSettings.useSSL,
+        ),
+      );
+      await conn.close();
+      return true;
+    } catch (e) {
+      print('Error connecting to MySQL: $e');
+      return false;
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

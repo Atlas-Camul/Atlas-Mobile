@@ -42,10 +42,15 @@ class BeaconController {
     await device.connect();
 
     // Query the database for information based on the beacon's data
-    // Replace the code below with your own database retrieval logic
-    // Example: Retrieve information based on the beacon's MAC address
+    
+    
+    
+  
     var macAddress = device.id.toString();
     var databaseResult = await yourDatabaseQueryFunction(macAddress);
+    var latitude = databaseResult['latitude'];
+    var longitude = databaseResult['longitude'];
+    print('Latitude: $latitude, Longitude: $longitude');
 
     // Print the retrieved information
     print(databaseResult);
@@ -74,7 +79,9 @@ class BeaconController {
     );
     
  
-    final results = await conn.query('SELECT * FROM your_table');
+    // Perform the database query based on the beacon's data
+    final results = await conn.query('SELECT * FROM your_table WHERE macAddress = ?', [macAddress]);
+
  
     await conn.close();
  

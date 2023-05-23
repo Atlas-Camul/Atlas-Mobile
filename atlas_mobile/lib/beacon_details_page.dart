@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:atlas_mobile/controllers/beacon_controller.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:atlas_mobile/controllers/beacon_controller.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
 class BeaconDetailsPage extends StatefulWidget {
   final ScanResult scanResult;
 
-  const BeaconDetailsPage({super.key, required this.scanResult});
+  const BeaconDetailsPage({Key? key, required this.scanResult}) : super(key: key);
 
   @override
   _BeaconDetailsPageState createState() => _BeaconDetailsPageState();
@@ -16,10 +16,13 @@ class _BeaconDetailsPageState extends State<BeaconDetailsPage> {
   final FlutterTts _flutterTts = FlutterTts();
   final BeaconController _beaconController = BeaconController();
   bool _isPlaying = false;
+  String? _latitude;
+  String? _longitude;
 
   @override
   void initState() {
     super.initState();
+    _retrieveDataFromDatabase();
     _speakDetails();
   }
 
@@ -27,6 +30,18 @@ class _BeaconDetailsPageState extends State<BeaconDetailsPage> {
   void dispose() {
     _flutterTts.stop();
     super.dispose();
+  }
+
+  Future<void> _retrieveDataFromDatabase() async {
+    // Replace this with your own logic to retrieve latitude and longitude from the database
+    // Example: Retrieve latitude and longitude based on beacon's data
+    var latitude = 'Latitude Value';
+    var longitude = 'Longitude Value';
+
+    setState(() {
+      _latitude = latitude;
+      _longitude = longitude;
+    });
   }
 
   Future<void> _speakDetails() async {
@@ -90,6 +105,20 @@ class _BeaconDetailsPageState extends State<BeaconDetailsPage> {
               'MAC Address: ${widget.scanResult.device.id}',
               style: const TextStyle(fontSize: 18),
             ),
+            const SizedBox(height: 20),
+            if (_latitude != null && _longitude != null)
+              Column(
+                children: [
+                  Text(
+                    'Latitude: $_latitude',
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                  Text(
+                    'Longitude: $_longitude',
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                ],
+              ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _playTTS,
