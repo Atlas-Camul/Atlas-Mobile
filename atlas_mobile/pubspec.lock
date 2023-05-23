@@ -312,6 +312,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.6"
+  google_maps_utils:
+    dependency: "direct main"
+    description:
+      name: google_maps_utils
+      sha256: "3d67c9a8a6be08eaa3af8b4efb8f5ad79b79d2f1dccd41a5db3ab599f7ce6300"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.5.0+0"
   http:
     dependency: transitive
     description:
