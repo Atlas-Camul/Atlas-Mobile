@@ -112,7 +112,7 @@ class _DiaryPageState extends State<DiaryPage> {
      if (_image != null) {
       // Upload the image to Azure Blob Storage
       var connectionString =
-      'DefaultEndpointsProtocol=https;AccountName=<atlascamulstorage>;AccountKey=<IwNJ988R3R7rJ9j9vwMsls5bz9M5NC+TWO+Xs26MO3NQHkycdEtOcoye6Qado/x2tcrWWO1DY6S3+AStlqAvPA==>;EndpointSuffix=core.windows.net';
+      'DefaultEndpointsProtocol=https;AccountName=atlascamulstorage;AccountKey=IwNJ988R3R7rJ9j9vwMsls5bz9M5NC+TWO+Xs26MO3NQHkycdEtOcoye6Qado/x2tcrWWO1DY6S3+AStlqAvPA==;EndpointSuffix=core.windows.net';
       var storage = AzureStorage.parse(connectionString);
 
       // Specify the container and blob name for the uploaded image
@@ -122,8 +122,18 @@ class _DiaryPageState extends State<DiaryPage> {
       // Read the image file as bytes
       var bytes = await _image!.readAsBytes();
 
-      // Upload the image to Azure Blob Storage
-      await storage.putBlob('$container/$blobName', bodyBytes: bytes);
+      try {
+        // Upload the image to Azure Blob Storage
+        await storage.putBlob('$container/$blobName', bodyBytes: bytes);
+
+        // Set the image URL in the diary entry
+       // entry.imageURL = '$container/$blobName';
+      } catch (e) {
+        // Handle the error
+        print('Error uploading image: $e');
+        // You can show an error message to the user or perform other error handling tasks here
+        return;
+      }
 
       // Set the image URL in the diary entry
      // entry.imageURL = '$container/$blobName';
