@@ -1,8 +1,8 @@
 import 'package:atlas_mobile/controllers/user_controller.dart';
 import 'package:atlas_mobile/register_page.dart';
+import 'package:atlas_mobile/main.dart';
 import 'package:flutter/material.dart';
 import 'package:mysql1/mysql1.dart';
-import 'package:atlas_mobile/bottom_page';
 import 'package:shared_preferences/shared_preferences.dart';
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -32,7 +32,7 @@ class _LoginPageState extends State<LoginPage> {
       if (userExists) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const BottomPage()),
+          MaterialPageRoute(builder: (context) =>NavBarPage(initialPage: 'HomePage')),
         );
       } else {
         // Show error message if user does not exist
@@ -67,7 +67,7 @@ class _LoginPageState extends State<LoginPage> {
     void _openRegisterPage() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => RegisterPage()),
+      MaterialPageRoute(builder: (context) => const RegisterPage()),
     );
   }
 

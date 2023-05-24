@@ -2,12 +2,11 @@ import 'dart:math';
 
 import 'package:atlas_mobile/beacon_page.dart';
 import 'package:atlas_mobile/diary_page.dart';
-import 'package:atlas_mobile/register_page.dart';
+
 import 'package:flutter/material.dart';
 import 'package:atlas_mobile/login_page.dart';
 import 'package:atlas_mobile/map_page.dart';
 import 'package:atlas_mobile/google_maps_page.dart';
-import 'bottom_page';
 import 'package:atlas_mobile/profile_page.dart';
 import 'package:atlas_mobile/test_page.dart';
 
@@ -49,9 +48,11 @@ class MyApp extends StatelessWidget {
       ),
 ),
 
-      home: BottomPage(),
+       home: const LoginPage(),
     );
   }
+
+  static of(BuildContext context) {}
 }
 
 class MyHomePage extends StatefulWidget {
@@ -135,6 +136,105 @@ class _MyHomePageState extends State<MyHomePage> {
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  
+  
+  
+  
+    
+  }
+
+}
+
+class NavBarPage extends StatefulWidget {
+  NavBarPage({Key? key, this.initialPage, this.page}) : super(key: key);
+
+  final String? initialPage;
+  final Widget? page;
+
+  @override
+  _NavBarPageState createState() => _NavBarPageState();
+}
+
+// This is the private State class that goes with NavBarPage.
+class _NavBarPageState extends State<NavBarPage> {
+  String _currentPageName = 'HomePage';
+  late Widget? _currentPage;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentPageName = widget.initialPage ?? _currentPageName;
+    _currentPage = widget.page;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final tabs = {
+      'HomePage': DiaryPage(),
+      'Beacon':BeaconPage(),
+      'mapa': GoogleMapsPage(),
+      'profile': ProfilePage(),
+    };
+    final currentIndex = tabs.keys.toList().indexOf(_currentPageName);
+
+    return Scaffold(
+      body: _currentPage ?? tabs[_currentPageName],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: currentIndex,
+        onTap: (i) => setState(() {
+          _currentPage = null;
+          _currentPageName = tabs.keys.toList()[i];
+        }),
+        backgroundColor: Color.fromARGB(255, 154, 26, 36),
+        selectedItemColor: Colors.black,
+        unselectedItemColor: Colors.white,
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
+        type: BottomNavigationBarType.fixed,
+        items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.home_outlined,
+              size: 24.0,
+            ),
+            label: 'Home',
+            tooltip: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.home_outlined,
+              size: 24.0,
+            ),
+            label: 'Home',
+            tooltip: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.map,
+              size: 24.0,
+            ),
+            label: 'Home',
+            tooltip: '',
+          ),
+        BottomNavigationBarItem(
+            icon: Icon(
+              Icons.account_box,
+              size: 24.0,
+            ),
+            label: 'Home',
+            tooltip: '',
+          )
+        
+        
+        
+        
+        
+        
+        
+        
+        ],
+      ),
     );
   }
 }

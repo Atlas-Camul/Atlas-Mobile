@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:atlas_mobile/login_page.dart';
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
 
@@ -27,6 +27,9 @@ class _ProfilePageState extends State<ProfilePage> {
       _age = prefs.getInt('age');
     });
   }
+
+
+   
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +69,12 @@ class _ProfilePageState extends State<ProfilePage> {
             ElevatedButton(
               onPressed: () {
                 // Handle sign out here
-                Navigator.pushReplacementNamed(context, '/login');
+                
+                Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) =>const LoginPage()),
+                );
+                ;
               },
               child: const Text('Sign Out'),
             ),
