@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:atlas_mobile/model/diary_entry.dart';
 import 'package:atlas_mobile/controllers/diary_controller.dart';
 import 'package:permission_handler/permission_handler.dart';
-
+import 'package:azblob/azblob.dart';
 class DiaryPage extends StatefulWidget {
   const DiaryPage({Key? key}) : super(key: key);
 
@@ -99,7 +99,7 @@ class _DiaryPageState extends State<DiaryPage> {
   }
 
   // Adds a new entry to the diary
-  void _addEntry() {
+  void _addEntry() async {
     final text = _textEditingController.text;
     if (text.isNotEmpty) {
       final entry = DiaryEntry(
@@ -109,8 +109,27 @@ class _DiaryPageState extends State<DiaryPage> {
         audioPath: _audioPath.isNotEmpty ? _audioPath : null,
         createdAt: DateTime.now(),
       );
+     if (_image != null) {
+      // Upload the image to Azure Blob Storage
+      var connectionString =
+      'DefaultEndpointsProtocol=https;AccountName=<atlascamulstorage>;AccountKey=<IwNJ988R3R7rJ9j9vwMsls5bz9M5NC+TWO+Xs26MO3NQHkycdEtOcoye6Qado/x2tcrWWO1DY6S3+AStlqAvPA==>;EndpointSuffix=core.windows.net';
+      var storage = AzureStorage.parse(connectionString);
+
+      // Specify the container and blob name for the uploaded image
+      var container = 'teste';
+      var blobName = 'image_${DateTime.now().millisecondsSinceEpoch}.jpg';
+
+      // Read the image file as bytes
+      var bytes = await _image!.readAsBytes();
+
+      // Upload the image to Azure Blob Storage
+      await storage.putBlob('$container/$blobName', bodyBytes: bytes);
+
+      // Set the image URL in the diary entry
+     // entry.imageURL = '$container/$blobName';
+    }
       setState(() {
-        _controller.addEntry(entry);
+        //_controller.addEntry(entry);
         _textEditingController.clear();
         _image = null;
         _audioPath = '';

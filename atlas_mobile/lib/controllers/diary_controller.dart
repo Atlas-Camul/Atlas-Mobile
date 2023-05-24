@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:atlas_mobile/model/diary_entry.dart';
-
+import 'package:azblob/azblob.dart';
 
 class DiaryController {
   final List<DiaryEntry> _entries = [];
@@ -9,7 +9,10 @@ class DiaryController {
 
   void addEntry(DiaryEntry entry) {
     _entries.add(entry);
-  }
+  
+
+  
+}
 
 
 

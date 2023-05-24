@@ -5,12 +5,12 @@ import 'package:atlas_mobile/diary_page.dart';
 
 import 'package:flutter/material.dart';
 import 'package:atlas_mobile/login_page.dart';
-import 'package:atlas_mobile/map_page.dart';
+
 import 'package:atlas_mobile/google_maps_page.dart';
 import 'package:atlas_mobile/profile_page.dart';
-import 'package:atlas_mobile/test_page.dart';
 
-import 'map_page.dart';
+
+
 
 void main() {
   runApp(const MyApp());
