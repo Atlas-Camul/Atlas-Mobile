@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:atlas_mobile/login_page.dart';
+
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
 
@@ -28,59 +29,174 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
-
-   
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const CircleAvatar(
-              radius: 50.0,
-            ),
-            const SizedBox(height: 20.0),
-            Text(
-              _username ?? '',
-              style: const TextStyle(
-                fontSize: 24.0,
-                fontWeight: FontWeight.bold,
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.arrow_back),
+        ),
+        title: Text(_username ?? ''),
+      ),
+      body: SingleChildScrollView(
+        child: Container(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              const SizedBox(height: 10.0),
+              Stack(
+                children: [
+                  SizedBox(
+                    width: 120,
+                    height: 120,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(100),
+                      child: CircleAvatar(
+                        backgroundImage: AssetImage('assets/profile_image.jpg'),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: Container(
+                      width: 35,
+                      height: 35,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(100),
+                        color: Colors.blue, // Replace with tPrimaryColor
+                      ),
+                      child: const Icon(
+                        Icons.edit,
+                        color: Colors.black,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(height: 10.0),
-            Text(
-              _email ?? '',
-              style: const TextStyle(
-                fontSize: 16.0,
-                color: Color.fromARGB(255, 75, 64, 64),
+              const SizedBox(height: 10),
+              Text(
+                'Profile Heading', // Replace with tProfileHeading
+                style: Theme.of(context).textTheme.headlineMedium,
               ),
-            ),
-            const SizedBox(height: 10.0),
-            Text(
-              _age != null ? 'Age: $_age' : '',
-              style: const TextStyle(
-                fontSize: 16.0,
-                color: Color.fromARGB(255, 185, 35, 35),
+              Text(
+                'Profile Subheading', // Replace with tProfileSubHeading
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
-            ),
-            const SizedBox(height: 20.0),
-            ElevatedButton(
-              onPressed: () {
-                // Handle sign out here
-                
-                Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) =>const LoginPage()),
-                );
-                ;
-              },
-              child: const Text('Sign Out'),
-            ),
-          ],
+              const SizedBox(height: 20),
+
+              /// -- BUTTON
+              SizedBox(
+                width: 200,
+                child: ElevatedButton(
+                  onPressed: () {
+                    // Handle edit profile button press
+                    /*Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const UpdateProfileScreen(),
+                      ),
+                    );*/
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue, // Replace with tPrimaryColor
+                    side: BorderSide.none,
+                    shape: const StadiumBorder(),
+                  ),
+                  child: const Text(
+                    'Edit Profile', // Replace with tEditProfile
+                    style: TextStyle(color: Colors.white), // Replace with tDarkColor
+                  ),
+                ),
+              ),
+              const SizedBox(height: 30),
+              const Divider(),
+              const SizedBox(height: 10),
+
+              /// -- MENU
+              ProfileMenuWidget(title: 'Settings', icon: Icons.settings, onPress: () {}),
+              ProfileMenuWidget(title: 'Billing Details', icon: Icons.account_balance_wallet, onPress: () {}),
+              ProfileMenuWidget(title: 'User Management', icon: Icons.person, onPress: () {}),
+              const Divider(),
+              const SizedBox(height: 10),
+              ProfileMenuWidget(title: 'Information', icon: Icons.info, onPress: () {}),
+              ProfileMenuWidget(
+                title: 'Logout',
+                icon: Icons.logout,
+                textColor: Colors.red,
+                endIcon: false,
+                onPress: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: const Text('LOGOUT'),
+                        content: const Text('Are you sure you want to logout?'),
+                        actions: [
+                          ElevatedButton(
+                            onPressed: () {
+                              // Handle logout button press
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const LoginPage(),
+                                ),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.redAccent,
+                              side: BorderSide.none,
+                            ),
+                            child: const Text('Yes'),
+                          ),
+                          OutlinedButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: const Text('No'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
+    );
+  }
+}
+
+class ProfileMenuWidget extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final Color? textColor;
+  final bool endIcon;
+  final VoidCallback onPress;
+
+  const ProfileMenuWidget({
+    Key? key,
+    required this.title,
+    required this.icon,
+    this.textColor,
+    this.endIcon = true,
+    required this.onPress,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      onTap: onPress,
+      title: Text(
+        title,
+        style: TextStyle(color: textColor),
+      ),
+      leading: Icon(icon),
+      trailing: endIcon ? const Icon(Icons.arrow_forward_ios) : null,
     );
   }
 }

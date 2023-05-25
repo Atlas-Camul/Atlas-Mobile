@@ -2,20 +2,16 @@ import 'dart:io';
 
 class DiaryEntry {
   final String id;
-  final String text;
-  final File? image;
-  final File? video;
-  final String? audioPath;
-  final DateTime createdAt;
+  late final String url;
+  final String type;
+
   
-  DiaryEntry({
-    required this.id,
-    required this.text,
-    required this.createdAt,
-    this.image,
-    this.video,
-    this.audioPath,
+ 
+  DiaryEntry(
+    this.id,
+    this.type,
+    this.url,
+    
   
-  
-  });
+  );
 }

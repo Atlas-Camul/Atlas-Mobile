@@ -101,22 +101,24 @@ class _DiaryPageState extends State<DiaryPage> {
   // Adds a new entry to the diary
   void _addEntry() async {
     final text = _textEditingController.text;
+     var connectionString =
+      'DefaultEndpointsProtocol=https;AccountName=atlascamulstorage;AccountKey=IwNJ988R3R7rJ9j9vwMsls5bz9M5NC+TWO+Xs26MO3NQHkycdEtOcoye6Qado/x2tcrWWO1DY6S3+AStlqAvPA==;EndpointSuffix=core.windows.net';
+      var storage = AzureStorage.parse(connectionString);
+      var container = 'teste';
     if (text.isNotEmpty) {
-      final entry = DiaryEntry(
+      /*final entry = DiaryEntry(
         id: DateTime.now().toString(),
         text: text,
         image: _image,
         audioPath: _audioPath.isNotEmpty ? _audioPath : null,
         createdAt: DateTime.now(),
-      );
+      );*/
      if (_image != null) {
       // Upload the image to Azure Blob Storage
-      var connectionString =
-      'DefaultEndpointsProtocol=https;AccountName=atlascamulstorage;AccountKey=IwNJ988R3R7rJ9j9vwMsls5bz9M5NC+TWO+Xs26MO3NQHkycdEtOcoye6Qado/x2tcrWWO1DY6S3+AStlqAvPA==;EndpointSuffix=core.windows.net';
-      var storage = AzureStorage.parse(connectionString);
+     
 
       // Specify the container and blob name for the uploaded image
-      var container = 'teste';
+      
       var blobName = 'image_${DateTime.now().millisecondsSinceEpoch}.jpg';
 
       // Read the image file as bytes
@@ -127,7 +129,7 @@ class _DiaryPageState extends State<DiaryPage> {
         await storage.putBlob('$container/$blobName', bodyBytes: bytes);
 
         // Set the image URL in the diary entry
-       // entry.imageURL = '$container/$blobName';
+         // entry.url = '$container/$blobName';
       } catch (e) {
         // Handle the error
         print('Error uploading image: $e');
@@ -137,6 +139,29 @@ class _DiaryPageState extends State<DiaryPage> {
 
       // Set the image URL in the diary entry
      // entry.imageURL = '$container/$blobName';
+    }
+    if(_audioPath != null){
+
+          var blobName = 'audioPath_${DateTime.now().millisecondsSinceEpoch}.mp3';
+
+      // Read the image file as bytes
+      //var bytes = await _audioPath!.readAsBytes();
+
+      try {
+        // Upload the image to Azure Blob Storage
+        await storage.putBlob('$container/$blobName');
+
+        // Set the image URL in the diary entry
+        //  entry.url = '$container/$blobName';
+      } catch (e) {
+        // Handle the error
+        print('Error uploading image: $e');
+        // You can show an error message to the user or perform other error handling tasks here
+        return;
+      }
+
+
+
     }
       setState(() {
         //_controller.addEntry(entry);
