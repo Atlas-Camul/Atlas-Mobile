@@ -16,7 +16,7 @@ class UserController {
     await prefs.setString('name', user.name);
     await prefs.setString('email', user.email);
     await prefs.setString('password', user.password);
-  
+    
     // Check MySQL connection
     final isConnected = await checkMySQLConnection();
     if (!isConnected) {

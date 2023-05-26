@@ -6,6 +6,10 @@ import 'package:atlas_mobile/model/diary_entry.dart';
 import 'package:atlas_mobile/controllers/diary_controller.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:azblob/azblob.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:atlas_mobile/model/message_model.dart';
+import 'package:atlas_mobile/model/media_model.dart';
+
 class DiaryPage extends StatefulWidget {
   const DiaryPage({Key? key}) : super(key: key);
 
@@ -98,84 +102,121 @@ class _DiaryPageState extends State<DiaryPage> {
     }
   }
 
-  // Adds a new entry to the diary
-  void _addEntry() async {
-    final text = _textEditingController.text;
-     var connectionString =
-      'DefaultEndpointsProtocol=https;AccountName=atlascamulstorage;AccountKey=IwNJ988R3R7rJ9j9vwMsls5bz9M5NC+TWO+Xs26MO3NQHkycdEtOcoye6Qado/x2tcrWWO1DY6S3+AStlqAvPA==;EndpointSuffix=core.windows.net';
-      var storage = AzureStorage.parse(connectionString);
-      var container = 'teste';
-    if (text.isNotEmpty) {
-      /*final entry = DiaryEntry(
-        id: DateTime.now().toString(),
-        text: text,
-        image: _image,
-        audioPath: _audioPath.isNotEmpty ? _audioPath : null,
-        createdAt: DateTime.now(),
-      );*/
-     if (_image != null) {
-      // Upload the image to Azure Blob Storage
-     
+void _addEntry() async {
+  final text = _textEditingController.text;
 
-      // Specify the container and blob name for the uploaded image
-      
+  if (text.isNotEmpty && (_audioPath.isNotEmpty || _image != null)) {
+    if (_audioPath.isNotEmpty && _image != null) {
+      // Delete existing image if an audio is added
+      await _deleteFile();
+      setState(() {
+        _image = null; // Remove image file from the state
+      });
+    }
+    // Get the current user ID from shared preferences
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('userId');
+
+   if (userId != null) {
+    // Create a new message entry
+    var message = Message(
+      id: 0,
+      title: '',
+      description: text,
+      latitude: '',
+      longitude: '',
+      zoneID: 1,
+      userId: userId,
+    );
+
+    // Insert the message entry in the database
+    int messageId = await _controller.insertMessage(message);
+
+    // Create a new media entry
+    var media = Media(
+      id: 0,
+      url: '',
+      type: '',
+      messageID: messageId,
+    );
+
+    if (_image != null) {
       var blobName = 'image_${DateTime.now().millisecondsSinceEpoch}.jpg';
-
-      // Read the image file as bytes
       var bytes = await _image!.readAsBytes();
 
       try {
-        // Upload the image to Azure Blob Storage
-        await storage.putBlob('$container/$blobName', bodyBytes: bytes);
+        // Upload the image to Azure Blob storage
+        await _controller.uploadBlob('teste', blobName, bytes);
 
-        // Set the image URL in the diary entry
-         // entry.url = '$container/$blobName';
+        // Set the media properties
+        media.url = blobName;
+        media.type = 'image';
       } catch (e) {
-        // Handle the error
         print('Error uploading image: $e');
-        // You can show an error message to the user or perform other error handling tasks here
         return;
       }
-
-      // Set the image URL in the diary entry
-     // entry.imageURL = '$container/$blobName';
     }
-    if(_audioPath != null){
 
-          var blobName = 'audioPath_${DateTime.now().millisecondsSinceEpoch}.mp3';
-
-      // Read the image file as bytes
-      //var bytes = await _audioPath!.readAsBytes();
+    if (_audioPath.isNotEmpty) {
+      var extension = _audioPath.split('.').last;
+      var blobName = 'audio_${DateTime.now().millisecondsSinceEpoch}.$extension';
 
       try {
-        // Upload the image to Azure Blob Storage
-        await storage.putBlob('$container/$blobName');
+        // Read the audio file as bytes
+        var bytes = await File(_audioPath).readAsBytes();
 
-        // Set the image URL in the diary entry
-        //  entry.url = '$container/$blobName';
+        // Upload the audio to Azure Blob storage
+        await _controller.uploadBlob('teste', blobName, bytes);
+
+        // Set the media properties
+        media.url = blobName;
+        media.type = 'audio';
       } catch (e) {
-        // Handle the error
-        print('Error uploading image: $e');
-        // You can show an error message to the user or perform other error handling tasks here
+        print('Error uploading audio: $e');
         return;
       }
-
-
-
     }
-      setState(() {
-        //_controller.addEntry(entry);
-        _textEditingController.clear();
-        _image = null;
-        _audioPath = '';
-      });
-    }
+
+    // Insert the media entry in the database
+    await _controller.insertMedia(media);
+
+    // Reset the input fields
+    _textEditingController.clear();
+    setState(() {
+      _image = null;
+      _audioPath = '';
+    });
+  }
+  }
+}
+
+  // Delete the file (image or audio)
+  Future<void> _deleteFile() async{
+    setState(() {
+      _image = null;
+      _audioPath = '';
+    });
   }
 
   // Allows the user to pick an image from the gallery
-  Future<void> _pickImage() async {
+  void _pickImage() async {
+    
+      if (_image != null) {
+      _deleteFile();
+    }
+    
+    
+    
+    
+    
+    
     final ImagePicker _picker = ImagePicker();
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+
+    
+    
+
+
 
     if (image != null) {
       setState(() {
@@ -187,6 +228,16 @@ class _DiaryPageState extends State<DiaryPage> {
   bool _showMediaOptions = false;
 
   void _toggleMediaOptions() {
+   
+   if (_image != null || _audioPath.isNotEmpty) {
+      _deleteFile();
+    }
+   
+   
+   
+   
+   
+   
     setState(() {
       _showMediaOptions = !_showMediaOptions;
     });
@@ -205,89 +256,87 @@ class _DiaryPageState extends State<DiaryPage> {
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: Container(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              child: TextFormField(
+      body: SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              TextField(
                 maxLines: null,
                 keyboardType: TextInputType.multiline,
                 decoration: InputDecoration(
                   hintText: 'Write your diary entry here...',
-                  border: InputBorder.none,
+                  border: OutlineInputBorder(),
                 ),
                 controller: _textEditingController,
               ),
-            ),
-            SizedBox(height: 16),
-            _buildMediaButton(
-              icon: Icons.add_circle_outline,
-              text: 'Add Media',
-              onTap: _toggleMediaOptions,
-            ),
-            SizedBox(height: 16),
-            _showMediaOptions
-                ? Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _buildMediaButton(
-                        icon: Icons.photo,
-                        text: 'Photo',
-                        onTap: _pickImage,
-                      ),
-                      _buildMediaButton(
-                        icon: Icons.videocam,
-                        text: 'Video',
-                        onTap: () {},
-                      ),
-                      _buildMediaButton(
-                        icon: Icons.mic,
-                        text: _isRecording ? 'Stop' : 'Record',
-                        onTap: _requestPermission,
-                      ),
-                    ],
-                  )
-                : Container(),
-            SizedBox(height: 16),
-            _audioPath.isNotEmpty
-                ? Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.play_arrow),
-                        onPressed: _playRecording,
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.stop),
-                        onPressed: _stopPlayback,
-                      ),
-                    ],
-                  )
-                : Container(),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _addEntry,
-              child: Text('Save Entry'),
-            ),
-          ],
+              SizedBox(height: 16),
+              _buildMediaButton(
+                icon: Icons.add_photo_alternate,
+                text: 'Add Image',
+                onTap: _pickImage,
+              ),
+              SizedBox(height: 16),
+              _image != null
+                  ? Column(
+                      children: [
+                        Image.file(_image!),
+                        ElevatedButton(
+                          onPressed: _deleteFile,
+                          child: Text('Delete Image'),
+                        ),
+                      ],
+                    )
+                  : Container(),
+              SizedBox(height: 16),
+              _buildMediaButton(
+                icon: Icons.mic,
+                text: _isRecording ? 'Stop Recording' : 'Start Recording',
+                onTap: _requestPermission,
+              ),
+              SizedBox(height: 16),
+              _audioPath.isNotEmpty
+                  ? Column(
+                      children: [
+                        ElevatedButton(
+                          onPressed: _playRecording,
+                          child: Text('Play Recording'),
+                        ),
+                        ElevatedButton(
+                          onPressed: _stopPlayback,
+                          child: Text('Stop Playback'),
+                        ),
+                        ElevatedButton(
+                          onPressed: _deleteFile,
+                          child: Text('Delete Audio'),
+                        ),
+                      ],
+                    )
+                  : Container(),
+              SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: _addEntry,
+                child: Text('Add Entry'),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildMediaButton({required IconData icon, required String text, required Function onTap}) {
+  Widget _buildMediaButton({
+    required IconData icon,
+    required String text,
+    required VoidCallback onTap,
+  }) {
     return InkWell(
-      onTap: () {
-        if (onTap is void Function()) {
-          onTap();
-        }
-      },
-      child: Column(
+      onTap: onTap,
+      child: Row(
         children: [
           Icon(icon),
-          SizedBox(height: 8),
+          SizedBox(width: 8),
           Text(text),
         ],
       ),

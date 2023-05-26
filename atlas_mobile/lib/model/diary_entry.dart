@@ -2,15 +2,15 @@ import 'dart:io';
 
 class DiaryEntry {
   final String id;
-  late final String url;
-  final String type;
+  late final String fileURL;
+  String fileType;
 
   
  
   DiaryEntry(
     this.id,
-    this.type,
-    this.url,
+    this.fileType,
+    this.fileURL
     
   
   );
