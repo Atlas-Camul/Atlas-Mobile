@@ -159,13 +159,7 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
             : GoogleMap(
                 initialCameraPosition:
                     CameraPosition(target: currentLocation, zoom: 19),
-                polylines: {
-                  Polyline(
-                      width: 10,
-                      polylineId: PolylineId('polyLine'),
-                      color: Color(0xFF08A5CB),
-                      points: polylineCoordinates)
-                },
+                polylines: _polylines,
                 markers: _markers,
                 onMapCreated: (GoogleMapController controller) {
                   _controller.complete(controller);
@@ -252,26 +246,131 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
         polylineCoordinates.add(LatLng(point.latitude, point.longitude));
       });
 
-      setState(() {
-        // _polylines.add(Polyline(
-        //     width: 10,
-        //     polylineId: PolylineId('polyLine'),
-        //     color: Color(0xFF08A5CB),
-        //     points: polylineCoordinates));
-      });
+      List<LatLng> testCoordinates = [];
+      PolylineResult testresult =
+          await polylinePoints.getRouteBetweenCoordinates(
+              "AIzaSyB4OGOittahn-IB8c7l2LWfpOLPUMxgms8",
+              PointLatLng(41.178131, -8.608211),
+              PointLatLng(AEntrance.latitude, AEntrance.longitude),
+              travelMode: TravelMode.walking);
+
+      if (testresult.status == 'OK') {
+        testCoordinates.clear();
+        testresult.points.forEach((PointLatLng point) {
+          testCoordinates.add(LatLng(point.latitude, point.longitude));
+          print(point.latitude.toString() + ',' + point.longitude.toString());
+        });
+
+        List<LatLng> BtoACoordinates = [];
+        BtoACoordinates = [
+          LatLng(41.17799, -8.6078),
+          LatLng(41.17801, -8.60819),
+          LatLng(41.17804, -8.60825),
+          LatLng(41.17817, -8.60826),
+          LatLng(41.17841, -8.60825),
+          LatLng(41.17853, -8.60825),
+          LatLng(41.17855, -8.60831),
+          LatLng(41.17858, -8.60864)
+        ];
+
+        List<LatLng> CtoACoordinates = [];
+        CtoACoordinates = [
+          LatLng(41.1786, -8.6072),
+          LatLng(41.17851, -8.60708),
+          LatLng(41.17843, -8.60717),
+          LatLng(41.17835, -8.60722),
+          LatLng(41.17829, -8.60724),
+          LatLng(41.17789, -8.60728),
+          LatLng(41.17776, -8.60737),
+          LatLng(41.17771, -8.60743),
+          LatLng(41.1777, -8.60749),
+          LatLng(41.1778, -8.60751),
+          LatLng(41.17788, -8.60751),
+          LatLng(41.17791, -8.60753),
+          LatLng(41.17795, -8.60759),
+          LatLng(41.17799, -8.60789),
+          LatLng(41.17801, -8.60821),
+          LatLng(41.17803, -8.60825),
+          LatLng(41.17807, -8.60826),
+          LatLng(41.17825, -8.60827),
+          LatLng(41.17847, -8.60824),
+          LatLng(41.17853, -8.60826),
+          LatLng(41.17856, -8.6084),
+          LatLng(41.17858, -8.60864),
+        ];
+
+        List<LatLng> GtoACoordinates = [
+          LatLng(41.1775, -8.6079),
+          LatLng(41.17799, -8.6078),
+          LatLng(41.17801, -8.60819),
+          LatLng(41.17804, -8.60825),
+          LatLng(41.17817, -8.60826),
+          LatLng(41.17841, -8.60825),
+          LatLng(41.17853, -8.60825),
+          LatLng(41.17855, -8.60831),
+          LatLng(41.17858, -8.60864)
+        ];
+        List<LatLng> HtoACoordinates = [
+          LatLng(41.178034, -8.608426),
+          LatLng(41.17806, -8.60826),
+          LatLng(41.17806, -8.60826),
+          LatLng(41.17817, -8.60826),
+          LatLng(41.17841, -8.60825),
+          LatLng(41.17853, -8.60825),
+          LatLng(41.17855, -8.60831),
+          LatLng(41.17858, -8.60864),
+        ];
+
+        List<LatLng> ItoACoordinates = [
+          LatLng(41.178131, -8.608211),
+          LatLng(41.17813, -8.60826),
+          LatLng(41.17825, -8.60827),
+          LatLng(41.17847, -8.60824),
+          LatLng(41.17853, -8.60826),
+          LatLng(41.17856, -8.6084),
+          LatLng(41.17858, -8.60864),
+        ];
+
+        List<LatLng> JtoACoordinates = [
+          LatLng(41.178644, -8.607465),
+          LatLng(41.1787, -8.6077),
+          LatLng(41.17852, -8.60796),
+          LatLng(41.17865, -8.60813),
+          LatLng(41.17869, -8.60823),
+          LatLng(41.17875, -8.60871),
+          LatLng(41.17864, -8.60871),
+          LatLng(41.1786, -8.60869),
+          LatLng(41.17858, -8.60865),
+          LatLng(41.17858, -8.60864),
+        ];
+
+        _polylines.add(Polyline(
+            polylineId: PolylineId("BtoA"),
+            width: 10,
+            color: Colors.orange,
+            points: ItoACoordinates));
+
+        setState(() {
+          _polylines.add(Polyline(
+              width: 10,
+              polylineId: PolylineId('polyLine'),
+              color: Color(0xFF08A5CB),
+              points: polylineCoordinates));
+        });
+      }
     }
   }
 
   void loadCustomMarkerIcons() async {
-    AIcon = await getBytesFromAsset('assets/images/A.png', 100);
-    BIcon = await getBytesFromAsset('assets/images/B.png', 100);
-    CIcon = await getBytesFromAsset('assets/images/C.png', 100);
-    DIcon = await getBytesFromAsset('assets/images/D.png', 100);
-    EIcon = await getBytesFromAsset('assets/images/E.png', 100);
-    FIcon = await getBytesFromAsset('assets/images/F.png', 100);
-    GIcon = await getBytesFromAsset('assets/images/G.png', 100);
-    HIcon = await getBytesFromAsset('assets/images/H.png', 100);
-    IIcon = await getBytesFromAsset('assets/images/I.png', 100);
-    JIcon = await getBytesFromAsset('assets/images/J.png', 100);
+    AIcon = await getBytesFromAsset('assets/images/A.png', 50);
+    BIcon = await getBytesFromAsset('assets/images/B.png', 50);
+    CIcon = await getBytesFromAsset('assets/images/C.png', 50);
+    DIcon = await getBytesFromAsset('assets/images/D.png', 50);
+    EIcon = await getBytesFromAsset('assets/images/E.png', 50);
+    FIcon = await getBytesFromAsset('assets/images/F.png', 50);
+    GIcon = await getBytesFromAsset('assets/images/G.png', 50);
+    HIcon = await getBytesFromAsset('assets/images/H.png', 50);
+    IIcon = await getBytesFromAsset('assets/images/I.png', 50);
+    JIcon = await getBytesFromAsset('assets/images/J.png', 50);
   }
 }
