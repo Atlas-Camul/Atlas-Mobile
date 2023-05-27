@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:atlas_mobile/login_page.dart';
-
+import 'package:atlas_mobile/colors/colors.dart';
+import 'package:atlas_mobile/update_profile.dart';
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
 
@@ -33,11 +34,8 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back),
-        ),
-        title: Text(_username ?? ''),
+        
+      title: Text(_username ?? ''),
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -52,7 +50,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     height: 120,
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(100),
-                      child: CircleAvatar(
+                      child: const CircleAvatar(
                         backgroundImage: AssetImage('assets/profile_image.jpg'),
                       ),
                     ),
@@ -78,7 +76,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               const SizedBox(height: 10),
               Text(
-                'Profile Heading', // Replace with tProfileHeading
+                _username ??'',
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
               Text(
@@ -93,12 +91,12 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: ElevatedButton(
                   onPressed: () {
                     // Handle edit profile button press
-                    /*Navigator.push(
+                    Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => const UpdateProfileScreen(),
                       ),
-                    );*/
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue, // Replace with tPrimaryColor
@@ -146,7 +144,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               );
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.redAccent,
+                              backgroundColor: AppColors.primaryColor,
                               side: BorderSide.none,
                             ),
                             child: const Text('Yes'),

@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:atlas_mobile/controllers/beacon_controller.dart';
-import 'package:atlas_mobile/db/db_settings.dart';
+
 import 'package:atlas_mobile/beacon_details_page.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 class BeaconPage extends StatefulWidget {
+  const BeaconPage({super.key});
+
   @override
   _BeaconPageState createState() => _BeaconPageState();
 }
 
 class _BeaconPageState extends State<BeaconPage> {
-  BeaconController _beaconController = BeaconController();
+  final BeaconController _beaconController = BeaconController();
 
   @override
   void initState() {
@@ -46,7 +48,7 @@ class _BeaconPageState extends State<BeaconPage> {
                 setState(() {});
               },
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Expanded(
               child: ListView.builder(
                 itemCount: _beaconController.scanResults.length,

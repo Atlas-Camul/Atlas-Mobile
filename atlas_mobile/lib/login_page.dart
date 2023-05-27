@@ -2,8 +2,8 @@ import 'package:atlas_mobile/controllers/user_controller.dart';
 import 'package:atlas_mobile/register_page.dart';
 import 'package:atlas_mobile/main.dart';
 import 'package:flutter/material.dart';
-import 'package:mysql1/mysql1.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:atlas_mobile/colors/colors.dart';
+
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
@@ -75,7 +75,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(153, 26, 35, 255),
+      backgroundColor: AppColors.backgroundColor,
       body: Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,

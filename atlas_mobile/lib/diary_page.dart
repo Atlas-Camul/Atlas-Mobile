@@ -115,7 +115,7 @@ void _addEntry() async {
     }
     // Get the current user ID from shared preferences
     final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getInt('userId');
+    final userId = prefs.getInt('id');
 
    if (userId != null) {
     // Create a new message entry

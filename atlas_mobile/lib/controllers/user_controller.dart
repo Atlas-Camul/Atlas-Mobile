@@ -4,13 +4,14 @@ import 'package:mysql1/mysql1.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 class UserController {
-  final UserModel user = UserModel('', '');
-
+  final UserModel user = UserModel('', '',);
+  
  Future <bool> registerUser() async {
     // Do something with the user data, like saving to a database or sending to an API
-    print('User registered: ${user.name}, ${user.email}, ${user.password}');
+    print('User registered: ${user.name}, ${user.email}, ${user.password},${user.id}');
  
  
+    
  // Store user data in shared preferences
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('name', user.name);
@@ -22,7 +23,7 @@ class UserController {
     if (!isConnected) {
       throw Exception('Failed to connect to MySQL');
     }
- 
+
  // Connect to the database
     final conn = await MySqlConnection.connect(
       ConnectionSettings(
@@ -52,12 +53,19 @@ class UserController {
 
     // Insert the user into the database
 
-    await conn.query(
+   final result= await conn.query(
       'INSERT INTO user (name, email, password) VALUES (?, ?, ?)',
       [user.name, user.email, user.password],
     );
- 
- 
+      print(result.insertId);
+       // Save the generated user ID to shared preferences
+    
+     final insertId = result.insertId;
+    await prefs.setInt('id', result.insertId!.toInt());
+   
+        
+      
+   
     // Close the database connection
       await conn.close();
       return true;
@@ -78,10 +86,10 @@ class UserController {
     );
      print('User logged:${user.email}, ${user.password}');
     // Check if the user exists in the database
-    final results = await conn.query(
-      'SELECT COUNT(*) AS count FROM user WHERE email = ? AND password = ?',
-      [email, password],
-    );
+   final results = await conn.query(
+  'SELECT COUNT(*) AS count, ID FROM user WHERE email = ? AND password = ? GROUP BY ID',
+  [email, password],
+);
 
 
 
@@ -92,8 +100,13 @@ class UserController {
 // If user exists, store user data in shared preferences
     if (results.first['count'] == 1) {
       final prefs = await SharedPreferences.getInstance();
+      final userId = results.first['ID'] as int; // Get the user ID from the query result
       await prefs.setString('email', email);
       await prefs.setString('password', password);
+      await prefs.setInt('id', userId); // Save the user ID in shared preferences
+      print(userId);
+      // Update the id field in the UserModel object
+      user.id = userId;
       return true;
     } else {
       return false;

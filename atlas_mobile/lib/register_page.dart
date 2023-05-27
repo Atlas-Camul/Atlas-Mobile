@@ -1,7 +1,5 @@
-
 import 'package:flutter/material.dart';
 import 'package:atlas_mobile/controllers/user_controller.dart';
-
 import 'package:atlas_mobile/login_page.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -27,6 +25,7 @@ class _RegisterPageState extends State<RegisterPage> {
       }
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -85,6 +84,20 @@ class _RegisterPageState extends State<RegisterPage> {
                   setState(() {
                     _controller.user.password = value!;
                   });
+                },
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'Repeat Password'),
+                obscureText: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please repeat your password';
+                  }
+                  if (value != _controller.user.password) {
+                    return 'Passwords do not match';
+                  }
+                  return null;
                 },
               ),
               const SizedBox(height: 32),
