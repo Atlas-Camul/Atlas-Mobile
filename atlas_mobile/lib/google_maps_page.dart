@@ -23,19 +23,29 @@ const LatLng IEntrance = LatLng(41.178131, -8.608211);
 const LatLng JEntrance = LatLng(41.178644, -8.607465);
 const LatLng CEntrance = LatLng(41.178607, -8.607186);
 const LatLng DEntrance = LatLng(41.179197, -8.607116);
-const LatLng AEntrance = LatLng(41.178547, -8.608646);
+const LatLng AEntrance = LatLng(41.1785, -8.6090);
 const LatLng FEntrance = LatLng(41.179055, -8.607857);
 
-late final Uint8List AIcon;
-late final Uint8List BIcon;
-late final Uint8List CIcon;
-late final Uint8List DIcon;
-late final Uint8List EIcon;
-late final Uint8List FIcon;
-late final Uint8List GIcon;
-late final Uint8List HIcon;
-late final Uint8List IIcon;
-late final Uint8List JIcon;
+late Uint8List AIcon;
+late Uint8List BIcon;
+late Uint8List CIcon;
+late Uint8List DIcon;
+late Uint8List EIcon;
+late Uint8List FIcon;
+late Uint8List GIcon;
+late Uint8List HIcon;
+late Uint8List IIcon;
+late Uint8List JIcon;
+
+List<LatLng> BtoACoordinates = [];
+List<LatLng> CtoACoordinates = [];
+List<LatLng> DtoACoordinates = [];
+List<LatLng> EtoACoordinates = [];
+List<LatLng> FtoACoordinates = [];
+List<LatLng> GtoACoordinates = [];
+List<LatLng> HtoACoordinates = [];
+List<LatLng> ItoACoordinates = [];
+List<LatLng> JtoACoordinates = [];
 
 class GoogleMapsPage extends StatefulWidget {
   const GoogleMapsPage({Key? key}) : super(key: key);
@@ -63,6 +73,7 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
   ];
 
   bool isLoading = true;
+  bool showingBuildingPath = false;
 
   @override
   void initState() {
@@ -137,6 +148,9 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
   }
 
   void updatePolylines(LatLng location) async {
+    if (showingBuildingPath) {
+      return;
+    }
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
         "AIzaSyB4OGOittahn-IB8c7l2LWfpOLPUMxgms8",
         PointLatLng(location.latitude, location.longitude),
@@ -164,8 +178,8 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
                 onMapCreated: (GoogleMapController controller) {
                   _controller.complete(controller);
 
-                  showMarker();
                   getCurrentLocation();
+                  showMarker();
                   //setPolylines();
                   updateLocation();
                 },
@@ -192,34 +206,154 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
     _markers.add(Marker(
         markerId: MarkerId("B"),
         position: BEntrance,
+        onTap: () {
+          if (showingBuildingPath) {
+            showingBuildingPath = false;
+            _polylines.clear();
+            setPolylines();
+          } else {
+            _polylines.clear();
+            _polylines.add(Polyline(
+                width: 10,
+                polylineId: PolylineId('BPolyLine'),
+                color: Colors.orange,
+                points: BtoACoordinates));
+            showingBuildingPath = true;
+          }
+        },
         icon: await BitmapDescriptor.fromBytes(BIcon)));
     _markers.add(Marker(
         markerId: MarkerId("C"),
         position: CEntrance,
+        onTap: () {
+          if (showingBuildingPath) {
+            showingBuildingPath = false;
+            _polylines.clear();
+            setPolylines();
+          } else {
+            _polylines.clear();
+            _polylines.add(Polyline(
+                width: 10,
+                polylineId: PolylineId('CPolyLine'),
+                color: Colors.orange,
+                points: CtoACoordinates));
+            showingBuildingPath = true;
+          }
+        },
         icon: await BitmapDescriptor.fromBytes(CIcon)));
     _markers.add(Marker(
         markerId: MarkerId("D"),
         position: DEntrance,
+        onTap: () {
+          if (showingBuildingPath) {
+            showingBuildingPath = false;
+            _polylines.clear();
+            setPolylines();
+          } else {
+            _polylines.clear();
+            _polylines.add(Polyline(
+                width: 10,
+                polylineId: PolylineId('DPolyLine'),
+                color: Colors.orange,
+                points: DtoACoordinates));
+            showingBuildingPath = true;
+          }
+        },
         icon: await BitmapDescriptor.fromBytes(DIcon)));
     _markers.add(Marker(
         markerId: MarkerId("F"),
         position: FEntrance,
+        onTap: () {
+          if (showingBuildingPath) {
+            showingBuildingPath = false;
+            _polylines.clear();
+            setPolylines();
+          } else {
+            _polylines.clear();
+            _polylines.add(Polyline(
+                width: 10,
+                polylineId: PolylineId('FPolyLine'),
+                color: Colors.orange,
+                points: FtoACoordinates));
+            showingBuildingPath = true;
+          }
+        },
         icon: await BitmapDescriptor.fromBytes(FIcon)));
     _markers.add(Marker(
         markerId: MarkerId("G"),
         position: GEntrance,
+        onTap: () {
+          if (showingBuildingPath) {
+            showingBuildingPath = false;
+            _polylines.clear();
+            setPolylines();
+          } else {
+            _polylines.clear();
+            _polylines.add(Polyline(
+                width: 10,
+                polylineId: PolylineId('GPolyLine'),
+                color: Colors.orange,
+                points: GtoACoordinates));
+            showingBuildingPath = true;
+          }
+        },
         icon: await BitmapDescriptor.fromBytes(GIcon)));
     _markers.add(Marker(
         markerId: MarkerId("H"),
         position: HEntrance,
+        onTap: () {
+          if (showingBuildingPath) {
+            showingBuildingPath = false;
+            _polylines.clear();
+            setPolylines();
+          } else {
+            _polylines.clear();
+            _polylines.add(Polyline(
+                width: 10,
+                polylineId: PolylineId('HPolyLine'),
+                color: Colors.orange,
+                points: HtoACoordinates));
+            showingBuildingPath = true;
+          }
+        },
         icon: await BitmapDescriptor.fromBytes(HIcon)));
     _markers.add(Marker(
         markerId: MarkerId("I"),
         position: IEntrance,
+        onTap: () {
+          if (showingBuildingPath) {
+            showingBuildingPath = false;
+            _polylines.clear();
+            setPolylines();
+          } else {
+            _polylines.clear();
+            _polylines.add(Polyline(
+                width: 10,
+                polylineId: PolylineId('IPolyLine'),
+                color: Colors.orange,
+                points: ItoACoordinates));
+            showingBuildingPath = true;
+          }
+        },
         icon: await BitmapDescriptor.fromBytes(IIcon)));
     _markers.add(Marker(
         markerId: MarkerId("J"),
         position: JEntrance,
+        onTap: () {
+          if (showingBuildingPath) {
+            showingBuildingPath = false;
+            _polylines.clear();
+            setPolylines();
+          } else {
+            _polylines.clear();
+            _polylines.add(Polyline(
+                width: 10,
+                polylineId: PolylineId('JPolyLine'),
+                color: Colors.orange,
+                points: JtoACoordinates));
+            showingBuildingPath = true;
+          }
+        },
         icon: await BitmapDescriptor.fromBytes(JIcon)));
   }
 
@@ -234,6 +368,9 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
   }
 
   void setPolylines() async {
+    if (showingBuildingPath) {
+      return;
+    }
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
         "AIzaSyB4OGOittahn-IB8c7l2LWfpOLPUMxgms8",
         PointLatLng(currentLocation.latitude, currentLocation.longitude),
@@ -254,110 +391,103 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
               PointLatLng(AEntrance.latitude, AEntrance.longitude),
               travelMode: TravelMode.walking);
 
-      if (testresult.status == 'OK') {
-        testCoordinates.clear();
-        testresult.points.forEach((PointLatLng point) {
-          testCoordinates.add(LatLng(point.latitude, point.longitude));
-          print(point.latitude.toString() + ',' + point.longitude.toString());
-        });
+      BtoACoordinates = [
+        LatLng(41.17799, -8.6078),
+        LatLng(41.17801, -8.60819),
+        LatLng(41.17804, -8.60825),
+        LatLng(41.17817, -8.60826),
+        LatLng(41.17841, -8.60825),
+        LatLng(41.17853, -8.60825),
+        LatLng(41.17855, -8.60831),
+        LatLng(41.17858, -8.60864),
+        LatLng(41.1786, -8.6090),
+        LatLng(41.1785, -8.6090),
+      ];
 
-        List<LatLng> BtoACoordinates = [];
-        BtoACoordinates = [
-          LatLng(41.17799, -8.6078),
-          LatLng(41.17801, -8.60819),
-          LatLng(41.17804, -8.60825),
-          LatLng(41.17817, -8.60826),
-          LatLng(41.17841, -8.60825),
-          LatLng(41.17853, -8.60825),
-          LatLng(41.17855, -8.60831),
-          LatLng(41.17858, -8.60864)
-        ];
+      CtoACoordinates = [
+        LatLng(41.178607, -8.607186),
+        LatLng(41.178644, -8.607465),
+        LatLng(41.1787, -8.6078),
+        LatLng(41.1785, -8.6079),
+        LatLng(41.17858, -8.60864),
+        LatLng(41.1786, -8.6090),
+        LatLng(41.1785, -8.6090),
+      ];
 
-        List<LatLng> CtoACoordinates = [];
-        CtoACoordinates = [
-          LatLng(41.1786, -8.6072),
-          LatLng(41.17851, -8.60708),
-          LatLng(41.17843, -8.60717),
-          LatLng(41.17835, -8.60722),
-          LatLng(41.17829, -8.60724),
-          LatLng(41.17789, -8.60728),
-          LatLng(41.17776, -8.60737),
-          LatLng(41.17771, -8.60743),
-          LatLng(41.1777, -8.60749),
-          LatLng(41.1778, -8.60751),
-          LatLng(41.17788, -8.60751),
-          LatLng(41.17791, -8.60753),
-          LatLng(41.17795, -8.60759),
-          LatLng(41.17799, -8.60789),
-          LatLng(41.17801, -8.60821),
-          LatLng(41.17803, -8.60825),
-          LatLng(41.17807, -8.60826),
-          LatLng(41.17825, -8.60827),
-          LatLng(41.17847, -8.60824),
-          LatLng(41.17853, -8.60826),
-          LatLng(41.17856, -8.6084),
-          LatLng(41.17858, -8.60864),
-        ];
+      DtoACoordinates = [
+        LatLng(41.179197, -8.607116),
+        LatLng(41.1790, -8.6068),
+        LatLng(41.178607, -8.607186),
+        LatLng(41.178644, -8.607465),
+        LatLng(41.1787, -8.6078),
+        LatLng(41.1785, -8.6079),
+        LatLng(41.17858, -8.60864),
+        LatLng(41.1786, -8.6090),
+        LatLng(41.1785, -8.6090),
+      ];
+      FtoACoordinates = [
+        LatLng(41.179055, -8.607857),
+        LatLng(41.1787, -8.6078),
+        LatLng(41.1785, -8.6079),
+        LatLng(41.17858, -8.60864),
+        LatLng(41.1786, -8.6090),
+        LatLng(41.1785, -8.6090),
+      ];
 
-        List<LatLng> GtoACoordinates = [
-          LatLng(41.1775, -8.6079),
-          LatLng(41.17799, -8.6078),
-          LatLng(41.17801, -8.60819),
-          LatLng(41.17804, -8.60825),
-          LatLng(41.17817, -8.60826),
-          LatLng(41.17841, -8.60825),
-          LatLng(41.17853, -8.60825),
-          LatLng(41.17855, -8.60831),
-          LatLng(41.17858, -8.60864)
-        ];
-        List<LatLng> HtoACoordinates = [
-          LatLng(41.178034, -8.608426),
-          LatLng(41.17806, -8.60826),
-          LatLng(41.17806, -8.60826),
-          LatLng(41.17817, -8.60826),
-          LatLng(41.17841, -8.60825),
-          LatLng(41.17853, -8.60825),
-          LatLng(41.17855, -8.60831),
-          LatLng(41.17858, -8.60864),
-        ];
+      GtoACoordinates = [
+        LatLng(41.1775, -8.6079),
+        LatLng(41.17799, -8.6078),
+        LatLng(41.17801, -8.60819),
+        LatLng(41.17804, -8.60825),
+        LatLng(41.17817, -8.60826),
+        LatLng(41.17841, -8.60825),
+        LatLng(41.17853, -8.60825),
+        LatLng(41.17855, -8.60831),
+        LatLng(41.17858, -8.60864),
+        LatLng(41.1786, -8.6090),
+        LatLng(41.1785, -8.6090),
+      ];
+      HtoACoordinates = [
+        LatLng(41.178034, -8.608426),
+        LatLng(41.17806, -8.60826),
+        LatLng(41.17806, -8.60826),
+        LatLng(41.17817, -8.60826),
+        LatLng(41.17841, -8.60825),
+        LatLng(41.17853, -8.60825),
+        LatLng(41.17855, -8.60831),
+        LatLng(41.17858, -8.60864),
+        LatLng(41.1786, -8.6090),
+        LatLng(41.1785, -8.6090),
+      ];
 
-        List<LatLng> ItoACoordinates = [
-          LatLng(41.178131, -8.608211),
-          LatLng(41.17813, -8.60826),
-          LatLng(41.17825, -8.60827),
-          LatLng(41.17847, -8.60824),
-          LatLng(41.17853, -8.60826),
-          LatLng(41.17856, -8.6084),
-          LatLng(41.17858, -8.60864),
-        ];
+      ItoACoordinates = [
+        LatLng(41.178131, -8.608211),
+        LatLng(41.17813, -8.60826),
+        LatLng(41.17825, -8.60827),
+        LatLng(41.17847, -8.60824),
+        LatLng(41.17853, -8.60826),
+        LatLng(41.17856, -8.6084),
+        LatLng(41.17858, -8.60864),
+        LatLng(41.1786, -8.6090),
+        LatLng(41.1785, -8.6090),
+      ];
 
-        List<LatLng> JtoACoordinates = [
-          LatLng(41.178644, -8.607465),
-          LatLng(41.1787, -8.6077),
-          LatLng(41.17852, -8.60796),
-          LatLng(41.17865, -8.60813),
-          LatLng(41.17869, -8.60823),
-          LatLng(41.17875, -8.60871),
-          LatLng(41.17864, -8.60871),
-          LatLng(41.1786, -8.60869),
-          LatLng(41.17858, -8.60865),
-          LatLng(41.17858, -8.60864),
-        ];
+      List<LatLng> JtoACoordinates = [
+        LatLng(41.178644, -8.607465),
+        LatLng(41.1787, -8.6078),
+        LatLng(41.1785, -8.6079),
+        LatLng(41.17858, -8.60864),
+        LatLng(41.1786, -8.6090),
+        LatLng(41.1785, -8.6090),
+      ];
 
+      setState(() {
         _polylines.add(Polyline(
-            polylineId: PolylineId("BtoA"),
             width: 10,
-            color: Colors.orange,
-            points: ItoACoordinates));
-
-        setState(() {
-          _polylines.add(Polyline(
-              width: 10,
-              polylineId: PolylineId('polyLine'),
-              color: Color(0xFF08A5CB),
-              points: polylineCoordinates));
-        });
-      }
+            polylineId: PolylineId('polyLine'),
+            color: Color(0xFF08A5CB),
+            points: polylineCoordinates));
+      });
     }
   }
 
