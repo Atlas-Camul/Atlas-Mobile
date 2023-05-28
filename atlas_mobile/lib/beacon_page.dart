@@ -18,6 +18,7 @@ class _BeaconPageState extends State<BeaconPage> {
   void initState() {
     super.initState();
     _beaconController.checkPermissions();
+    
   }
 
   void _navigateToBeaconDetailsPage(ScanResult scanResult) {
@@ -55,14 +56,27 @@ class _BeaconPageState extends State<BeaconPage> {
                 itemBuilder: (context, index) {
                   var result = _beaconController.scanResults[index];
                   return ListTile(
+                    
+                   
                     title: Text(result.device.name ?? 'Unknown'),
+                  
+                    
                     subtitle: Text(
+                       
+
                       'RSSI: ${result.rssi} dBm\nMAC: ${result.device.id}',
                     ),
                     onTap: () {
                       _navigateToBeaconDetailsPage(result);
                     },
+                   
                   );
+                
+                
+                
+                
+                
+                
                 },
               ),
             ),

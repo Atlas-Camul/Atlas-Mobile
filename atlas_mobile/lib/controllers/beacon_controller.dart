@@ -1,15 +1,15 @@
-
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:mysql1/mysql1.dart';
 import 'package:atlas_mobile/db/db_settings.dart';
+import 'package:atlas_mobile/model/beacon_model.dart';
 
 class BeaconController {
   FlutterBluePlus _flutterBlue = FlutterBluePlus.instance;
   List<ScanResult> _scanResults = [];
   bool _isScanning = false;
 
-  List<ScanResult> get scanResults => _scanResults;
+  List<ScanResult> get scanResults => List.from(_scanResults);
   bool get isScanning => _isScanning;
 
   Future<void> checkPermissions() async {
@@ -42,30 +42,24 @@ class BeaconController {
     await device.connect();
 
     // Query the database for information based on the beacon's data
-    
-    
-    
-  
     var macAddress = device.id.toString();
     var databaseResult = await yourDatabaseQueryFunction(macAddress);
-    var latitude = databaseResult['latitude'];
-    var longitude = databaseResult['longitude'];
+    var latitude = databaseResult.first['latitude'] ;
+    var longitude = databaseResult.first['longitude'];
     print('Latitude: $latitude, Longitude: $longitude');
-
-    // Print the retrieved information
-    print(databaseResult);
-
+    
+    var beacon = Beacon(
+      macAddress: macAddress,
+      latitude: latitude,
+      longitude: longitude,
+    );
+    print(beacon.latitude);
     // Disconnect from the beacon
     await device.disconnect();
   }
 
-  Future<dynamic> yourDatabaseQueryFunction(String macAddress)async{
-    // Replace this function with your own database retrieval logic
-    // Example: Query the database using the beacon's MAC address
-    // Return the retrieved information
-    // Example: return yourDatabase.query(macAddress);
- 
- // Connect to the database
+  Future<Results> yourDatabaseQueryFunction(String macAddress) async {
+    // Connect to the database
     final conn = await MySqlConnection.connect(
       ConnectionSettings(
         host: DbSettings.host,
@@ -73,30 +67,22 @@ class BeaconController {
         db: DbSettings.dbName,
         user: DbSettings.user,
         password: DbSettings.password,
-        useSSL: DbSettings.useSSL
-     
+        useSSL: DbSettings.useSSL,
       ),
     );
-    
- 
-    // Perform the database query based on the beacon's data
-    final results = await conn.query('SELECT * FROM your_table WHERE macAddress = ?', [macAddress]);
 
- 
+    // Perform the database query based on the beacon's data
+    final results = await conn.query('SELECT * FROM beacon WHERE macAdress = ?', [macAddress]);
+
     await conn.close();
- 
- 
- 
- 
- 
- 
+
     return results;
   }
 
   void stopScan() {
     if (_isScanning) {
-_flutterBlue.stopScan();
-_isScanning = false;
-}
-}
+      _flutterBlue.stopScan();
+      _isScanning = false;
+    }
+  }
 }

@@ -33,14 +33,14 @@ class _BeaconDetailsPageState extends State<BeaconDetailsPage> {
   }
 
   Future<void> _retrieveDataFromDatabase() async {
-    // Replace this with your own logic to retrieve latitude and longitude from the database
-    // Example: Retrieve latitude and longitude based on beacon's data
-    var latitude = 'Latitude Value';
-    var longitude = 'Longitude Value';
+    var macAddress = widget.scanResult.device.id.toString();
+    var databaseResult = await _beaconController.yourDatabaseQueryFunction(macAddress);
+    var latitude = databaseResult.first['latitude'] ;
+    var longitude = databaseResult.first['longitude'] ;
 
     setState(() {
-      _latitude = latitude;
-      _longitude = longitude;
+      _latitude = latitude.toString();
+      _longitude = longitude.toString();
     });
   }
 
