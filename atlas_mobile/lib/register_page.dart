@@ -11,12 +11,14 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
+  final _passwordController = TextEditingController(); // Add this line
 
   final UserController _controller = UserController();
 
   void _submitForm() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
+
       bool registered = await _controller.registerUser();
       if (registered) {
         Navigator.of(context).pushReplacement(
@@ -24,6 +26,12 @@ class _RegisterPageState extends State<RegisterPage> {
         );
       }
     }
+  }
+
+  @override
+  void dispose() {
+    _passwordController.dispose(); // Add this line to dispose of the controller
+    super.dispose();
   }
 
   @override
@@ -74,6 +82,7 @@ class _RegisterPageState extends State<RegisterPage> {
               TextFormField(
                 decoration: const InputDecoration(labelText: 'Password'),
                 obscureText: true,
+                controller: _passwordController, // Add this line
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your password';
@@ -94,7 +103,8 @@ class _RegisterPageState extends State<RegisterPage> {
                   if (value == null || value.isEmpty) {
                     return 'Please repeat your password';
                   }
-                  if (value != _controller.user.password) {
+                  
+                  if (value != _passwordController.text) { // Compare with the password controller value
                     return 'Passwords do not match';
                   }
                   return null;
@@ -112,3 +122,4 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 }
+

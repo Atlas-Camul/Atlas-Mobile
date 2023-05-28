@@ -25,7 +25,7 @@ class _LoginPageState extends State<LoginPage> {
       // Check if user exists in the database
       final userExists = await controller.loginUser(
         controller.user.email,
-        controller.user.password,
+        controller.user.password
       );
 
       // Navigate to new screen if successful

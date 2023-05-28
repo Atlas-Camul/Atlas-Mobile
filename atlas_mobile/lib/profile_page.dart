@@ -29,7 +29,7 @@ class _ProfilePageState extends State<ProfilePage> {
       _age = prefs.getInt('age');
     });
   }
-
+    
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,7 +63,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       height: 35,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(100),
-                        color: Colors.blue, // Replace with tPrimaryColor
+                        color: AppColors.primaryColor, // Replace with tPrimaryColor
                       ),
                       child: const Icon(
                         Icons.edit,
@@ -99,7 +99,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue, // Replace with tPrimaryColor
+                    backgroundColor: AppColors.primaryColor, // Replace with tPrimaryColor
                     side: BorderSide.none,
                     shape: const StadiumBorder(),
                   ),
@@ -123,7 +123,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ProfileMenuWidget(
                 title: 'Logout',
                 icon: Icons.logout,
-                textColor: Colors.red,
+                textColor: AppColors.primaryColor,
                 endIcon: false,
                 onPress: () {
                   showDialog(
