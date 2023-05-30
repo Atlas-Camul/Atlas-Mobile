@@ -58,7 +58,7 @@ class BeaconController {
     // Create a map marker
     var marker = Marker(
       markerId: MarkerId(macAddress),
-      position: LatLng(double.parse(databaseResult.first['latitude']), double.parse(databaseResult.first['longitude'])),
+      position: LatLng(double.parse(databaseResult.first[latitude]), double.parse(databaseResult.first[longitude])),
       infoWindow: InfoWindow(title: macAddress),
     );
 
