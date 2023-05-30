@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
-
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart' as geolocator;
@@ -12,6 +12,9 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:location/location.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:google_maps_utils/google_maps_utils.dart';
+import 'beacon_page.dart';
+import 'controllers/beacon_controller.dart';
+  
 
 const LatLng DEST_LOCATION = LatLng(41.1782, -8.6067);
 const LatLng ISEP_ENTRANCE = LatLng(41.1782, -8.6067);
@@ -58,6 +61,7 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
   Completer<GoogleMapController> _controller = Completer();
 
   Set<Marker> _markers = Set<Marker>();
+  final BeaconController _beaconController = BeaconController();
   late LatLng currentLocation;
   late LatLng destinationLocation = DEST_LOCATION;
 
@@ -77,11 +81,23 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
 
   @override
   void initState() {
+     _beaconController.checkPermissions();
+     _beaconController.startScan();
+     _addMarkersFromBeacons();
+     
     super.initState();
     getCurrentLocation();
     loadCustomMarkerIcons();
     polylinePoints = PolylinePoints();
   }
+   @override
+  void dispose() {
+   // _beaconController.stopScan();
+    super.dispose();
+  }
+
+
+
 
   void getCurrentLocation() async {
     //GET PERMISSION
@@ -109,6 +125,20 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
       print("already in isep");
     }
   }
+
+
+ void _addMarkersFromBeacons() {
+  for (var scanResult in _beaconController.scanResults) {
+    _createMarkerAndAddToList(scanResult);
+  }
+}
+
+void _createMarkerAndAddToList(ScanResult scanResult) async {
+  var marker = await _beaconController.createMarkerFromBeacon(scanResult);
+  setState(() {
+    _markers.add(marker);
+  });
+}
 
   void updateLocation() async {
     GoogleMapController googleMapController = await _controller.future;
@@ -187,7 +217,8 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
   }
 
   Future<void> showMarker() async {
-    _markers.clear();
+    
+
     _markers.add(Marker(
       markerId: MarkerId("currentLocation"),
       position: LatLng(currentLocation!.latitude!, currentLocation!.longitude!),
@@ -355,6 +386,9 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
           }
         },
         icon: await BitmapDescriptor.fromBytes(JIcon)));
+  
+    
+  
   }
 
   Future<Uint8List> getBytesFromAsset(String path, int width) async {
@@ -482,6 +516,7 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
       ];
 
       setState(() {
+       
         _polylines.add(Polyline(
             width: 10,
             polylineId: PolylineId('polyLine'),

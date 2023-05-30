@@ -1,8 +1,10 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:mysql1/mysql1.dart';
 import 'package:atlas_mobile/db/db_settings.dart';
 import 'package:atlas_mobile/model/beacon_model.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class BeaconController {
   FlutterBluePlus _flutterBlue = FlutterBluePlus.instance;
@@ -28,15 +30,12 @@ class BeaconController {
     _scanResults.clear(); // Reset the list before starting a new scan
     _flutterBlue.scan(timeout: Duration(seconds: 5)).listen((scanResult) {
       _scanResults.add(scanResult);
-
-      // Connect to the beacon and retrieve information from the database
-      _retrieveDataFromDatabase(scanResult);
     }).onDone(() {
       _isScanning = false;
     });
   }
 
-  Future<void> _retrieveDataFromDatabase(ScanResult scanResult) async {
+  Future<Marker> createMarkerFromBeacon(ScanResult scanResult) async {
     // Establish a connection with the beacon
     var device = scanResult.device;
     await device.connect();
@@ -44,18 +43,26 @@ class BeaconController {
     // Query the database for information based on the beacon's data
     var macAddress = device.id.toString();
     var databaseResult = await yourDatabaseQueryFunction(macAddress);
-    var latitude = databaseResult.first['latitude'] ;
+    var latitude = databaseResult.first['latitude'];
     var longitude = databaseResult.first['longitude'];
-    print('Latitude: $latitude, Longitude: $longitude');
-    
+
     var beacon = Beacon(
-      macAddress: macAddress,
-      latitude: latitude,
-      longitude: longitude,
+       macAddress=macAddress,
+       latitude=latitude,
+    longitude=longitude,
     );
-    print(beacon.latitude);
+
     // Disconnect from the beacon
     await device.disconnect();
+
+    // Create a map marker
+    var marker = Marker(
+      markerId: MarkerId(macAddress),
+      position: LatLng(double.parse(databaseResult.first['latitude']), double.parse(databaseResult.first['longitude'])),
+      infoWindow: InfoWindow(title: macAddress),
+    );
+
+    return marker;
   }
 
   Future<Results> yourDatabaseQueryFunction(String macAddress) async {
@@ -72,10 +79,9 @@ class BeaconController {
     );
 
     // Perform the database query based on the beacon's data
-    final results = await conn.query('SELECT * FROM beacon WHERE macAdress = ?', [macAddress]);
+    final results = await conn.query('SELECT * FROM beacon WHERE macAddress = ?', [macAddress]);
 
     await conn.close();
-
     return results;
   }
 

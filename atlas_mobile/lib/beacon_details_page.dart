@@ -7,7 +7,7 @@ class BeaconDetailsPage extends StatefulWidget {
   final ScanResult scanResult;
 
   const BeaconDetailsPage({Key? key, required this.scanResult}) : super(key: key);
-
+  
   @override
   _BeaconDetailsPageState createState() => _BeaconDetailsPageState();
 }

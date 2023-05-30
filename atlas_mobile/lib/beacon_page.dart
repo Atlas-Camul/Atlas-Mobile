@@ -19,6 +19,7 @@ class _BeaconPageState extends State<BeaconPage> {
     super.initState();
     _beaconController.checkPermissions();
     
+    
   }
 
   void _navigateToBeaconDetailsPage(ScanResult scanResult) {
@@ -29,6 +30,10 @@ class _BeaconPageState extends State<BeaconPage> {
       ),
     );
   }
+ /*  Future<void> _retrieveDataFromDatabase(ScanResult scanResult) async {
+    await _beaconController.retrieveDataFromDatabase(scanResult); // Retrieve data from the database
+    setState(() {}); // Update the UI after retrieving data
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +50,7 @@ class _BeaconPageState extends State<BeaconPage> {
                   _beaconController.stopScan();
                 } else {
                   _beaconController.startScan();
+                
                 }
                 setState(() {});
               },
@@ -66,10 +72,10 @@ class _BeaconPageState extends State<BeaconPage> {
 
                       'RSSI: ${result.rssi} dBm\nMAC: ${result.device.id}',
                     ),
-                    onTap: () {
+                    onTap: () async {
+                     // await _retrieveDataFromDatabase(result); // Retrieve data from the database
                       _navigateToBeaconDetailsPage(result);
                     },
-                   
                   );
                 
                 
