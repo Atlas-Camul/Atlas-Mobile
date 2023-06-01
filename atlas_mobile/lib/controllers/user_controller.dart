@@ -167,6 +167,52 @@ class UserController {
     }
   }
 
+  Future<bool> updateUser(String newName) async {
+  // Get the user ID from shared preferences
+  final prefs = await SharedPreferences.getInstance();
+  final userId = prefs.getInt('id');
+
+  if (userId == null) {
+    throw Exception('User ID not found in shared preferences');
+  }
+
+  // Check MySQL connection
+  final isConnected = await checkMySQLConnection();
+  if (!isConnected) {
+    throw Exception('Failed to connect to MySQL');
+  }
+
+  // Connect to the database
+  final conn = await MySqlConnection.connect(
+    ConnectionSettings(
+      host: DbSettings.host,
+      port: DbSettings.port,
+      db: DbSettings.dbName,
+      user: DbSettings.user,
+      password: DbSettings.password,
+      useSSL: DbSettings.useSSL,
+    ),
+  );
+
+  // Update the user's name in the database
+  final result = await conn.query(
+    'UPDATE user SET name = ? WHERE id = ?',
+    [newName, userId],
+  );
+
+  // Close the database connection
+  await conn.close();
+
+  if (result.affectedRows == 1) {
+    // Update the user's name in shared preferences
+    await prefs.setString('name', newName);
+    // Update the name field in the UserModel object
+    user.name = newName;
+    return true;
+  } else {
+    return false;
+  }
+}
 
 
 

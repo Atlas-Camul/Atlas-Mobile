@@ -51,7 +51,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(100),
                       child: const CircleAvatar(
-                        backgroundImage: AssetImage('assets/profile_image.jpg'),
+                        backgroundImage: AssetImage('assets/images/profile_image.png'),
                       ),
                     ),
                   ),

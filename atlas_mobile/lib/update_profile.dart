@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 const tProfile = "Profile";
-const tProfileImage = "assets/profile_image.jpg";
+const tProfileImage = "assets/images/profile_image.png";
 const tProfileHeading = "Profile Heading";
 const tProfileSubHeading = "Profile Subheading";
 const tDefaultSize = 16.0;
@@ -156,4 +156,15 @@ class UpdateProfileScreen extends StatelessWidget {
       ),
     );
   }
+
+
+
+
+
+
+
+
+
+
+
 }

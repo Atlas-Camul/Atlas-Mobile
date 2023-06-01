@@ -1,4 +1,6 @@
 import 'dart:async';
+
+
 import 'dart:developer';
 import 'dart:math';
 import 'dart:typed_data';
@@ -14,7 +16,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:google_maps_utils/google_maps_utils.dart';
 import 'beacon_page.dart';
 import 'controllers/beacon_controller.dart';
-  
+import 'dart:developer';
 
 const LatLng DEST_LOCATION = LatLng(41.1782, -8.6067);
 const LatLng ISEP_ENTRANCE = LatLng(41.1782, -8.6067);
@@ -59,7 +61,7 @@ class GoogleMapsPage extends StatefulWidget {
 
 class _GoogleMapsPageState extends State<GoogleMapsPage> {
   Completer<GoogleMapController> _controller = Completer();
-
+  int beaconCount = 0;
   Set<Marker> _markers = Set<Marker>();
   final BeaconController _beaconController = BeaconController();
   late LatLng currentLocation;
@@ -83,7 +85,21 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
   void initState() {
      _beaconController.checkPermissions();
      _beaconController.startScan();
-     _addMarkersFromBeacons();
+     _beaconController.scanResultsStream.listen((List<ScanResult> scanResults) {
+    setState(() {
+      beaconCount = scanResults.length;
+
+        // Print scan results to console
+ 
+
+
+
+
+
+
+    });
+  });
+    // _addMarkersFromBeacons();
      
     super.initState();
     getCurrentLocation();
@@ -92,7 +108,7 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
   }
    @override
   void dispose() {
-   // _beaconController.stopScan();
+   _beaconController.stopScan();
     super.dispose();
   }
 
@@ -126,7 +142,7 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
     }
   }
 
-
+/*
  void _addMarkersFromBeacons() {
   for (var scanResult in _beaconController.scanResults) {
     _createMarkerAndAddToList(scanResult);
@@ -139,7 +155,7 @@ void _createMarkerAndAddToList(ScanResult scanResult) async {
     _markers.add(marker);
   });
 }
-
+*/
   void updateLocation() async {
     GoogleMapController googleMapController = await _controller.future;
 
@@ -194,7 +210,6 @@ void _createMarkerAndAddToList(ScanResult scanResult) async {
       });
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -213,7 +228,34 @@ void _createMarkerAndAddToList(ScanResult scanResult) async {
                   //setPolylines();
                   updateLocation();
                 },
-              ));
+              ),
+              floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
+      bottomNavigationBar: BottomAppBar(
+        child: Container(
+          height: 50.0,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.add_business),
+              SizedBox(width: 5),
+              Text('Beacons: $beaconCount'),
+            ],
+          ),
+        ),
+      ),
+              
+              
+              
+              
+              
+              
+              
+              
+              
+              
+              
+              
+              );
   }
 
   Future<void> showMarker() async {
