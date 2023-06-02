@@ -3,6 +3,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:atlas_mobile/login_page.dart';
 import 'package:atlas_mobile/colors/colors.dart';
 import 'package:atlas_mobile/update_profile.dart';
+
+import 'main.dart';
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
 
@@ -24,7 +26,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _username = prefs.getString('username');
+      _username = prefs.getString('name');
       _email = prefs.getString('email');
       _age = prefs.getInt('age');
     });
@@ -94,7 +96,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const UpdateProfileScreen(),
+                        builder: (context) => UpdateProfileScreen(),
                       ),
                     );
                   },
@@ -197,4 +199,8 @@ class ProfileMenuWidget extends StatelessWidget {
       trailing: endIcon ? const Icon(Icons.arrow_forward_ios) : null,
     );
   }
+}
+
+void main() {
+  runApp(MyApp());
 }

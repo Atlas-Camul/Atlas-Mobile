@@ -1,28 +1,83 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
+
+import 'colors/colors.dart';
+import 'controllers/user_controller.dart';
 
 const tProfile = "Profile";
 const tProfileImage = "assets/images/profile_image.png";
 const tProfileHeading = "Profile Heading";
 const tProfileSubHeading = "Profile Subheading";
 const tDefaultSize = 16.0;
-const tPrimaryColor = Colors.blue;
-const tDarkColor = Colors.black;
+
 const tEditProfile = "Edit Profile";
-const tFormHeight= 110.0;
-class UpdateProfileScreen extends StatelessWidget {
-  const UpdateProfileScreen({Key? key}) : super(key: key);
+const tFormHeight = 100.0;
+
+class UpdateProfileScreen extends StatefulWidget {
+  UpdateProfileScreen({Key? key}) : super(key: key);
+
+  @override
+  _UpdateProfileScreenState createState() => _UpdateProfileScreenState();
+}
+
+class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
+  final UserController _userController = UserController();
+  final _formKey = GlobalKey<FormState>();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  String newName = ''; // Variable to store the new name
+  String phoneNumber = ''; // Variable to store the phone number
+
+  @override
+  void initState() {
+    super.initState();
+    _loadNameFromSharedPreferences();
+  }
+
+  void _loadNameFromSharedPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? storedName = prefs.getString('name');
+
+    setState(() {
+      newName = storedName ?? ''; // Assign the retrieved name to the newName variable
+    });
+  }
+
+  void _submitForm() async {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+
+      if (newName.isNotEmpty) {
+        final isSuccess = await _userController.updateUser(newName);
+        print(newName);
+        if (isSuccess) {
+          // Show a success message or perform any other actions
+          _showSnackBar("Name changed successfully");
+        } else {
+          // Show an error message or perform any other actions
+        }
+      } else {
+        _showSnackBar("error");
+      }
+    }
+  }
+
+  void _showSnackBar(String message) {
+    final snackBar = SnackBar(content: Text(message));
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
           icon: const Icon(LineAwesomeIcons.angle_left),
         ),
-        title: Text(tEditProfile, style: Theme.of(context).textTheme.headline4),
+        title: Text(tEditProfile, style: Theme.of(context).textTheme.headline6),
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -48,7 +103,7 @@ class UpdateProfileScreen extends StatelessWidget {
                       height: 35,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(100),
-                        color: tPrimaryColor,
+                        color: AppColors.primaryColor,
                       ),
                       child: const Icon(
                         LineAwesomeIcons.camera,
@@ -63,55 +118,44 @@ class UpdateProfileScreen extends StatelessWidget {
 
               // -- Form Fields
               Form(
+                key: _formKey,
                 child: Column(
                   children: [
                     TextFormField(
+                      initialValue: newName,
                       decoration: const InputDecoration(
-                        label: Text("tFullName"),
+                        labelText: "Full Name",
                         prefixIcon: Icon(LineAwesomeIcons.user),
                       ),
+                      onSaved: (value) {
+                        newName = value ?? ''; // Update the newName variable with the saved value
+                      },
                     ),
-                    const SizedBox(height: tFormHeight - 20),
-                    TextFormField(
+                    const SizedBox(height: tFormHeight - 80),
+                    IntlPhoneField(
                       decoration: const InputDecoration(
-                        label: Text("tEmail"),
-                        prefixIcon: Icon(LineAwesomeIcons.envelope_1),
+                        labelText: "Phone Number",
+                        prefixIcon: Icon(LineAwesomeIcons.mobile_phone),
                       ),
+                      onChanged: (phone) {
+                        phoneNumber = phone.completeNumber ?? ''; // Update the phoneNumber variable with the entered phone number
+                      },
                     ),
-                    const SizedBox(height: tFormHeight - 20),
-                    TextFormField(
-                      decoration: const InputDecoration(
-                        label: Text("tPhoneNo"),
-                        prefixIcon: Icon(LineAwesomeIcons.phone),
-                      ),
-                    ),
-                    const SizedBox(height: tFormHeight - 20),
-                    TextFormField(
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        label: const Text("tPassword"),
-                        prefixIcon: const Icon(Icons.fingerprint),
-                        suffixIcon: IconButton(
-                          icon: const Icon(LineAwesomeIcons.eye_slash),
-                          onPressed: () {},
-                        ),
-                      ),
-                    ),
+                    
+                   
                     const SizedBox(height: tFormHeight),
 
                     // -- Form Submit Button
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () {
-                          // Add your code here to update the profile data
-                        },
+                        onPressed: _submitForm,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: tPrimaryColor,
+                          backgroundColor: AppColors.primaryColor,
                           side: BorderSide.none,
                           shape: const StadiumBorder(),
                         ),
-                        child: const Text(tEditProfile, style: TextStyle(color: tDarkColor)),
+                        child: const Text(tEditProfile, style: TextStyle(color: AppColors.backgroundColor)),
                       ),
                     ),
                     const SizedBox(height: tFormHeight),
@@ -120,13 +164,13 @@ class UpdateProfileScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text.rich(
+                        Text.rich(
                           TextSpan(
-                            text: "tJoined",
+                            text: "Joined ",
                             style: TextStyle(fontSize: 12),
                             children: [
                               TextSpan(
-                                text: "tJoinedAt",
+                                text: "JoinedAt",
                                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                               ),
                             ],
@@ -143,7 +187,7 @@ class UpdateProfileScreen extends StatelessWidget {
                             shape: const StadiumBorder(),
                             side: BorderSide.none,
                           ),
-                          child: const Text("tDelete"),
+                          child: const Text("Delete"),
                         ),
                       ],
                     ),
@@ -156,15 +200,4 @@ class UpdateProfileScreen extends StatelessWidget {
       ),
     );
   }
-
-
-
-
-
-
-
-
-
-
-
 }
