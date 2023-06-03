@@ -1,11 +1,11 @@
 class UserModel {
   int? id;
-  
-  String name = '';
-  String email = '';
-  String password = '';
+  DateTime lastLogin;
+  String name;
+  String phoneNumber;
+  String email;
+  String password;
+  String? otp; // Add the OTP property
 
-  UserModel(this.email, this.password);
-
-
+  UserModel(this.name,this.phoneNumber, this.email, this.password,this.lastLogin);
 }

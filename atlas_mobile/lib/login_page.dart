@@ -4,6 +4,8 @@ import 'package:atlas_mobile/main.dart';
 import 'package:flutter/material.dart';
 import 'package:atlas_mobile/colors/colors.dart';
 
+import 'forgot_password_page.dart';
+
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
@@ -19,35 +21,34 @@ class _LoginPageState extends State<LoginPage> {
   String? email;
   String? password;
 
- void _submitForm() async {
-  if (_formKey.currentState?.validate() == true && controller.validateForm() == true) {
-    try {
-      // Check if user exists in the database
-      final userExists = await controller.loginUser(
-        controller.user.email,
-        controller.user.password
-      );
+  void _submitForm() async {
+    if (_formKey.currentState?.validate() == true && controller.validateForm() == true) {
+      try {
+        // Check if user exists in the database
+        final userExists = await controller.loginUser(
+          controller.user.email,
+          controller.user.password,
+        );
 
-      // Navigate to new screen if successful
-      if (userExists) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) =>NavBarPage(initialPage: 'HomePage')),
-        );
-      } else {
-        // Show error message if user does not exist
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Invalid email or password'),
-          ),
-        );
+        // Navigate to new screen if successful
+        if (userExists) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => NavBarPage(initialPage: 'HomePage')),
+          );
+        } else {
+          // Show error message if user does not exist
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Invalid email or password'),
+            ),
+          );
+        }
+      } catch (e) {
+        print('Error during login: $e');
       }
-    } catch (e) {
-      print('Error during login: $e');
     }
   }
-}
-
 
   String? validateEmail(String? value) {
     if (value == null || value.isEmpty) {
@@ -64,13 +65,18 @@ class _LoginPageState extends State<LoginPage> {
     // You can add more password validation logic here if needed
     return null;
   }
-    void _openRegisterPage() {
+
+  void _openRegisterPage() {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const RegisterPage()),
     );
   }
 
+  void _openForgotPasswordPage() {
+    
+     Navigator.push(context, MaterialPageRoute(builder: (context) => ForgotPasswordPage()));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -116,7 +122,7 @@ class _LoginPageState extends State<LoginPage> {
                   validator: validateEmail,
                   onChanged: (value) {
                     setState(() {
-                     controller.setEmail(value);
+                      controller.setEmail(value);
                     });
                   },
                 ),
@@ -148,7 +154,7 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     InkWell(
-                      onTap:_openRegisterPage,
+                      onTap: _openRegisterPage,
                       child: Text(
                         'Don\'t have an account?',
                         style: TextStyle(color: Colors.white, fontSize: 14),
@@ -171,6 +177,14 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ],
                 ),
+                SizedBox(height: 16),
+                TextButton(
+                  onPressed: _openForgotPasswordPage,
+                  child: Text(
+                    'Forgot Your Password?',
+                    style: TextStyle(color: Colors.white, fontSize: 14),
+                  ),
+                ),
               ],
             ),
           ),
@@ -179,3 +193,4 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
+

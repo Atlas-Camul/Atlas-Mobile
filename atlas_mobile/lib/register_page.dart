@@ -1,3 +1,4 @@
+import 'package:atlas_mobile/otp_verification_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:atlas_mobile/controllers/user_controller.dart';
 import 'package:atlas_mobile/login_page.dart';
@@ -20,22 +21,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
   List<String> temporaryEmailDomains = [
     // Add known temporary email domains here
-  
     'temp-mail.org',
     // ...
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
   ];
 
   void _submitForm() async {
@@ -53,7 +40,7 @@ class _RegisterPageState extends State<RegisterPage> {
       bool registered = await _controller.registerUser();
       if (registered) {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => LoginPage()),
+          MaterialPageRoute(builder: (context) => OtpVerificationScreen()),
         );
       }
     }
@@ -137,9 +124,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     return null;
                   },
                   onSaved: (value) {
-                    setState(() {
-                      _controller.user.name = value!;
-                    });
+                    _controller.user.name = value!;
                   },
                 ),
                 const SizedBox(height: 16),
@@ -156,9 +141,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     return null;
                   },
                   onSaved: (value) {
-                    setState(() {
-                      _controller.user.email = value!;
-                    });
+                    _controller.user.email = value!;
                   },
                 ),
 
@@ -171,7 +154,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     print(phone.completeNumber); // You can access the complete phone number using phone.completeNumber
                   },
                   validator: (value) {
-                    if (value == null) {
+                    if (value == null ) {
                       return 'Please enter your phone number';
                     }
                     return null;
@@ -179,6 +162,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   onSaved: (phone) {
                     // Handle saving of phone number
                     print(phone?.completeNumber); // You can access the complete phone number using phone.completeNumber
+                    _controller.user.phoneNumber = phone!.completeNumber!;
                   },
                 ),
 
@@ -189,9 +173,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   controller: _passwordController,
                   validator: _validatePassword,
                   onSaved: (value) {
-                    setState(() {
-                      _controller.user.password = value!;
-                    });
+                    _controller.user.password = value!;
                   },
                 ),
                 const SizedBox(height: 8),
