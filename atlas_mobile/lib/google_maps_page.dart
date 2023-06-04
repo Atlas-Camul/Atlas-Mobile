@@ -1,8 +1,5 @@
 import 'dart:async';
-
-import 'dart:developer';
 import 'dart:math';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter/material.dart';
@@ -10,13 +7,10 @@ import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart' as geolocator;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
-import 'package:location/location.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:google_maps_utils/google_maps_utils.dart';
-import 'beacon_page.dart';
 import 'controllers/beacon_controller.dart';
-import 'dart:developer';
-import 'package:permission_handler/permission_handler.dart';
+
+
 
 const LatLng DEST_LOCATION = LatLng(41.1782, -8.6067);
 const LatLng ISEP_ENTRANCE = LatLng(41.1782, -8.6067);
@@ -90,6 +84,7 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
   void initState() {
     super.initState();
     scanBeacons();
+    
     getCurrentLocation();
     loadCustomMarkerIcons();
     polylinePoints = PolylinePoints();
@@ -101,13 +96,15 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
     super.dispose();
   }
 
-  Future<void> scanBeacons() async {
-    if (_isScanning) {
-      return;
-    }
-    _isScanning = true;
-    beaconMarkers.clear(); // Reset the markers before starting a new scan
-    _flutterBlue.scan(timeout: Duration(seconds: 5)).listen((scanResult) async {
+Future<void> scanBeacons() async {
+  if (_isScanning) {
+    return;
+  }
+  _isScanning = true;
+  beaconMarkers.clear(); // Reset the markers before starting a new scan
+
+  try {
+    await for (final scanResult in _flutterBlue.scan(timeout: Duration(seconds: 5))) {
       if (scanResult != null) {
         print(scanResult.device);
       }
@@ -122,36 +119,11 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
           print(beaconMarkers);
         });
       }
-    }).onDone(() {
-      _isScanning = false;
-    });
+    }
+  } finally {
+    _isScanning = false;
   }
-
-  // void getBeacons() async {
-  //   if (_isScanning) {
-  //     return;
-  //   }
-  //   _isScanning = true;
-  //   _markers.clear(); // Reset the markers before starting a new scan
-  //   _flutterBlue.scan(timeout: Duration(seconds: 5)).listen((scanResult) async {
-  //     if (scanResult != null) {
-  //       print(scanResult.device);
-  //     }
-
-  //     final marker = await _beaconController.createMarkerFromBeacon(scanResult);
-
-  //     if (marker != null) {
-  //       print(marker);
-
-  //       setState(() {
-  //         beaconMarkers.add(marker);
-  //         print(beaconMarkers);
-  //       });
-  //     }
-  //   }).onDone(() {
-  //     _isScanning = false;
-  //   });
-  // }
+}
 
   void getCurrentLocation() async {
     //GET PERMISSION
@@ -183,7 +155,7 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
   void updateLocation() async {
     GoogleMapController googleMapController = await _controller.future;
 
-    final geolocator.LocationSettings locationSettings =
+    const geolocator.LocationSettings locationSettings =
         geolocator.LocationSettings(
             accuracy: geolocator.LocationAccuracy.high, distanceFilter: 0);
 
@@ -239,7 +211,7 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : GoogleMap(
               initialCameraPosition:
                   CameraPosition(target: currentLocation, zoom: 19),
@@ -274,22 +246,22 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
 
   Future<void> showMarker() async {
     _markers.add(Marker(
-      markerId: MarkerId("currentLocation"),
+      markerId: const MarkerId("currentLocation"),
       position: LatLng(currentLocation!.latitude!, currentLocation!.longitude!),
       icon: await BitmapDescriptor.fromBytes(UserIcon),
     ));
     _markers.add(Marker(
-      markerId: MarkerId("destination"),
+      markerId: const MarkerId("destination"),
       position: destinationLocation,
       icon: BitmapDescriptor.defaultMarkerWithHue(90),
     ));
 
     _markers.add(Marker(
-        markerId: MarkerId("A"),
+        markerId: const MarkerId("A"),
         position: AEntrance,
         icon: await BitmapDescriptor.fromBytes(AIcon)));
     _markers.add(Marker(
-        markerId: MarkerId("B"),
+        markerId: const MarkerId("B"),
         position: BEntrance,
         onTap: () {
           if (showingBuildingPath) {
@@ -300,7 +272,7 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
             _polylines.clear();
             _polylines.add(Polyline(
                 width: 10,
-                polylineId: PolylineId('BPolyLine'),
+                polylineId: const PolylineId('BPolyLine'),
                 color: Colors.orange,
                 points: BtoACoordinates));
             showingBuildingPath = true;
@@ -308,7 +280,7 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
         },
         icon: await BitmapDescriptor.fromBytes(BIcon)));
     _markers.add(Marker(
-        markerId: MarkerId("C"),
+        markerId: const MarkerId("C"),
         position: CEntrance,
         onTap: () {
           if (showingBuildingPath) {
@@ -319,7 +291,7 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
             _polylines.clear();
             _polylines.add(Polyline(
                 width: 10,
-                polylineId: PolylineId('CPolyLine'),
+                polylineId: const PolylineId('CPolyLine'),
                 color: Colors.orange,
                 points: CtoACoordinates));
             showingBuildingPath = true;
@@ -327,7 +299,7 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
         },
         icon: await BitmapDescriptor.fromBytes(CIcon)));
     _markers.add(Marker(
-        markerId: MarkerId("D"),
+        markerId: const MarkerId("D"),
         position: DEntrance,
         onTap: () {
           if (showingBuildingPath) {
@@ -338,7 +310,7 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
             _polylines.clear();
             _polylines.add(Polyline(
                 width: 10,
-                polylineId: PolylineId('DPolyLine'),
+                polylineId: const PolylineId('DPolyLine'),
                 color: Colors.orange,
                 points: DtoACoordinates));
             showingBuildingPath = true;
@@ -346,7 +318,7 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
         },
         icon: await BitmapDescriptor.fromBytes(DIcon)));
     _markers.add(Marker(
-        markerId: MarkerId("F"),
+        markerId: const MarkerId("F"),
         position: FEntrance,
         onTap: () {
           if (showingBuildingPath) {
@@ -357,7 +329,7 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
             _polylines.clear();
             _polylines.add(Polyline(
                 width: 10,
-                polylineId: PolylineId('FPolyLine'),
+                polylineId: const PolylineId('FPolyLine'),
                 color: Colors.orange,
                 points: FtoACoordinates));
             showingBuildingPath = true;
@@ -376,7 +348,7 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
             _polylines.clear();
             _polylines.add(Polyline(
                 width: 10,
-                polylineId: PolylineId('GPolyLine'),
+                polylineId: const PolylineId('GPolyLine'),
                 color: Colors.orange,
                 points: GtoACoordinates));
             showingBuildingPath = true;
@@ -384,7 +356,7 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
         },
         icon: await BitmapDescriptor.fromBytes(GIcon)));
     _markers.add(Marker(
-        markerId: MarkerId("H"),
+        markerId: const MarkerId("H"),
         position: HEntrance,
         onTap: () {
           if (showingBuildingPath) {
@@ -403,7 +375,7 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
         },
         icon: await BitmapDescriptor.fromBytes(HIcon)));
     _markers.add(Marker(
-        markerId: MarkerId("I"),
+        markerId: const MarkerId("I"),
         position: IEntrance,
         onTap: () {
           if (showingBuildingPath) {
@@ -414,7 +386,7 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
             _polylines.clear();
             _polylines.add(Polyline(
                 width: 10,
-                polylineId: PolylineId('IPolyLine'),
+                polylineId: const PolylineId('IPolyLine'),
                 color: Colors.orange,
                 points: ItoACoordinates));
             showingBuildingPath = true;
@@ -433,7 +405,7 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
             _polylines.clear();
             _polylines.add(Polyline(
                 width: 10,
-                polylineId: PolylineId('JPolyLine'),
+                polylineId: const PolylineId('JPolyLine'),
                 color: Colors.orange,
                 points: JtoACoordinates));
             showingBuildingPath = true;
@@ -473,7 +445,7 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
       PolylineResult testresult =
           await polylinePoints.getRouteBetweenCoordinates(
               "AIzaSyB4OGOittahn-IB8c7l2LWfpOLPUMxgms8",
-              PointLatLng(41.178131, -8.608211),
+              const PointLatLng(41.178131, -8.608211),
               PointLatLng(AEntrance.latitude, AEntrance.longitude),
               travelMode: TravelMode.walking);
 
@@ -559,18 +531,18 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
       ];
 
       List<LatLng> JtoACoordinates = [
-        LatLng(41.178644, -8.607465),
-        LatLng(41.1787, -8.6078),
-        LatLng(41.1785, -8.6079),
-        LatLng(41.17858, -8.60864),
-        LatLng(41.1786, -8.6090),
-        LatLng(41.1785, -8.6090),
+        const LatLng(41.178644, -8.607465),
+        const LatLng(41.1787, -8.6078),
+        const LatLng(41.1785, -8.6079),
+        const LatLng(41.17858, -8.60864),
+        const LatLng(41.1786, -8.6090),
+        const LatLng(41.1785, -8.6090),
       ];
 
       setState(() {
         _polylines.add(Polyline(
             width: 10,
-            polylineId: PolylineId('polyLine'),
+            polylineId: const PolylineId('polyLine'),
             color: Color(0xFF08A5CB),
             points: polylineCoordinates));
       });
