@@ -1,6 +1,5 @@
 import 'dart:async';
 
-
 import 'dart:developer';
 import 'dart:math';
 import 'dart:typed_data';
@@ -17,6 +16,7 @@ import 'package:google_maps_utils/google_maps_utils.dart';
 import 'beacon_page.dart';
 import 'controllers/beacon_controller.dart';
 import 'dart:developer';
+import 'package:permission_handler/permission_handler.dart';
 
 const LatLng DEST_LOCATION = LatLng(41.1782, -8.6067);
 const LatLng ISEP_ENTRANCE = LatLng(41.1782, -8.6067);
@@ -41,6 +41,7 @@ late Uint8List GIcon;
 late Uint8List HIcon;
 late Uint8List IIcon;
 late Uint8List JIcon;
+late Uint8List UserIcon;
 
 List<LatLng> BtoACoordinates = [];
 List<LatLng> CtoACoordinates = [];
@@ -51,6 +52,10 @@ List<LatLng> GtoACoordinates = [];
 List<LatLng> HtoACoordinates = [];
 List<LatLng> ItoACoordinates = [];
 List<LatLng> JtoACoordinates = [];
+
+bool _isScanning = false;
+FlutterBluePlus _flutterBlue = FlutterBluePlus.instance;
+List<Marker> beaconMarkers = [];
 
 class GoogleMapsPage extends StatefulWidget {
   const GoogleMapsPage({Key? key}) : super(key: key);
@@ -80,62 +85,73 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
 
   bool isLoading = true;
   bool showingBuildingPath = false;
-  
+
   @override
   void initState() {
-     _beaconController.checkPermissions();
-     
-    
-    
-     _beaconController.startScan();
-       _addMarkers();
-     _beaconController.scanResultsStream.listen((List<ScanResult> scanResults) {
-   
-    
-    
-    
-    setState(() {
-      beaconCount = scanResults.length;
-
-        // Print scan results to console
- 
-
-      print(beaconCount);
-
-
-
-
-    });
-  });
-
-
-
-  
-
-     
     super.initState();
+    scanBeacons();
     getCurrentLocation();
     loadCustomMarkerIcons();
     polylinePoints = PolylinePoints();
   }
-   @override
+
+  @override
   void dispose() {
-   _beaconController.stopScan();
+    _beaconController.stopScan();
     super.dispose();
   }
 
-  void _addMarkers() async {
-    // Create markers based on beacon data
-    final beaconController = BeaconController();
-    final scanResults = await beaconController.scanResultsStream.first;
-    for (final scanResult in scanResults) {
-      final marker = await beaconController.createMarkerFromBeacon(scanResult);
-      setState(() {
-        _markers.add(marker!);
-      });
+  Future<void> scanBeacons() async {
+    if (_isScanning) {
+      return;
     }
+    _isScanning = true;
+    beaconMarkers.clear(); // Reset the markers before starting a new scan
+    _flutterBlue.scan(timeout: Duration(seconds: 5)).listen((scanResult) async {
+      if (scanResult != null) {
+        print(scanResult.device);
+      }
+
+      final marker = await _beaconController.createMarkerFromBeacon(scanResult);
+
+      if (marker != null) {
+        print(marker);
+
+        setState(() {
+          beaconMarkers.add(marker);
+          print(beaconMarkers);
+        });
+      }
+    }).onDone(() {
+      _isScanning = false;
+    });
   }
 
+  // void getBeacons() async {
+  //   if (_isScanning) {
+  //     return;
+  //   }
+  //   _isScanning = true;
+  //   _markers.clear(); // Reset the markers before starting a new scan
+  //   _flutterBlue.scan(timeout: Duration(seconds: 5)).listen((scanResult) async {
+  //     if (scanResult != null) {
+  //       print(scanResult.device);
+  //     }
+
+  //     final marker = await _beaconController.createMarkerFromBeacon(scanResult);
+
+  //     if (marker != null) {
+  //       print(marker);
+
+  //       setState(() {
+  //         beaconMarkers.add(marker);
+  //         print(beaconMarkers);
+  //       });
+  //     }
+  //   }).onDone(() {
+  //     _isScanning = false;
+  //   });
+  // }
 
   void getCurrentLocation() async {
     //GET PERMISSION
@@ -163,7 +179,6 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
       print("already in isep");
     }
   }
-
 
   void updateLocation() async {
     GoogleMapController googleMapController = await _controller.future;
@@ -219,26 +234,28 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
       });
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: isLoading
-            ? Center(child: CircularProgressIndicator())
-            : GoogleMap(
-                initialCameraPosition:
-                    CameraPosition(target: currentLocation, zoom: 19),
-               // polylines: _polylines,
-                markers: _markers,
-                onMapCreated: (GoogleMapController controller) {
-                  _controller.complete(controller);
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : GoogleMap(
+              initialCameraPosition:
+                  CameraPosition(target: currentLocation, zoom: 19),
+              polylines: _polylines,
+              markers: _markers,
+              onMapCreated: (GoogleMapController controller) {
+                _controller.complete(controller);
 
-                  getCurrentLocation();
-                  showMarker();
-                  setPolylines();
-                  updateLocation();
-                },
-              ),
-              floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
+                getCurrentLocation();
+                //getBeacons();
+                showMarker();
+                setPolylines();
+                updateLocation();
+              },
+            ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
       bottomNavigationBar: BottomAppBar(
         child: Container(
           height: 50.0,
@@ -252,28 +269,14 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
           ),
         ),
       ),
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              );
+    );
   }
 
   Future<void> showMarker() async {
-    
-
     _markers.add(Marker(
       markerId: MarkerId("currentLocation"),
       position: LatLng(currentLocation!.latitude!, currentLocation!.longitude!),
-      icon: BitmapDescriptor.defaultMarker,
+      icon: await BitmapDescriptor.fromBytes(UserIcon),
     ));
     _markers.add(Marker(
       markerId: MarkerId("destination"),
@@ -437,9 +440,7 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
           }
         },
         icon: await BitmapDescriptor.fromBytes(JIcon)));
-  
-    
-  
+    _markers.addAll(beaconMarkers);
   }
 
   Future<Uint8List> getBytesFromAsset(String path, int width) async {
@@ -567,7 +568,6 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
       ];
 
       setState(() {
-       
         _polylines.add(Polyline(
             width: 10,
             polylineId: PolylineId('polyLine'),
@@ -588,6 +588,6 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
     HIcon = await getBytesFromAsset('assets/images/H.png', 50);
     IIcon = await getBytesFromAsset('assets/images/I.png', 50);
     JIcon = await getBytesFromAsset('assets/images/J.png', 50);
+    UserIcon = await getBytesFromAsset('assets/images/profile_image.png', 100);
   }
 }
-
