@@ -1,25 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:atlas_mobile/controllers/beacon_controller.dart';
-
+import 'package:atlas_mobile/db/db_settings.dart';
 import 'package:atlas_mobile/beacon_details_page.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 class BeaconPage extends StatefulWidget {
-  const BeaconPage({super.key});
-
   @override
   _BeaconPageState createState() => _BeaconPageState();
 }
 
 class _BeaconPageState extends State<BeaconPage> {
-  final BeaconController _beaconController = BeaconController();
+  BeaconController _beaconController = BeaconController();
 
   @override
   void initState() {
     super.initState();
     _beaconController.checkPermissions();
-    
-    
   }
 
   void _navigateToBeaconDetailsPage(ScanResult scanResult) {
@@ -30,15 +26,13 @@ class _BeaconPageState extends State<BeaconPage> {
       ),
     );
   }
- /*  Future<void> _retrieveDataFromDatabase(ScanResult scanResult) async {
-    await _beaconController.retrieveDataFromDatabase(scanResult); // Retrieve data from the database
-    setState(() {}); // Update the UI after retrieving data
-  }*/
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
+      appBar: AppBar(
+        title: Text('Beacon Page'),
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -50,39 +44,25 @@ class _BeaconPageState extends State<BeaconPage> {
                   _beaconController.stopScan();
                 } else {
                   _beaconController.startScan();
-                
                 }
                 setState(() {});
               },
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             Expanded(
               child: ListView.builder(
                 itemCount: _beaconController.scanResults.length,
                 itemBuilder: (context, index) {
                   var result = _beaconController.scanResults[index];
                   return ListTile(
-                    
-                   
                     title: Text(result.device.name ?? 'Unknown'),
-                  
-                    
                     subtitle: Text(
-                       
-
                       'RSSI: ${result.rssi} dBm\nMAC: ${result.device.id}',
                     ),
-                    onTap: () async {
-                     // await _retrieveDataFromDatabase(result); // Retrieve data from the database
+                    onTap: () {
                       _navigateToBeaconDetailsPage(result);
                     },
                   );
-                
-                
-                
-                
-                
-                
                 },
               ),
             ),

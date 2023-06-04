@@ -173,7 +173,7 @@ class _NavBarPageState extends State<NavBarPage> {
   Widget build(BuildContext context) {
     final tabs = {
       'HomePage': const HomePageWidget(),
-      'Beacon':const BeaconPage(),
+      'Beacon':BeaconPage(),
       'mapa': const GoogleMapsPage(),
       'profile': const ProfilePage(),
     };

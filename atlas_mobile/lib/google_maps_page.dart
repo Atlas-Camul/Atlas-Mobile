@@ -63,7 +63,7 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
   Completer<GoogleMapController> _controller = Completer();
   int beaconCount = 0;
   Set<Marker> _markers = Set<Marker>();
-  final BeaconController _beaconController = BeaconController();
+  BeaconController _beaconController = BeaconController();
   late LatLng currentLocation;
   late LatLng destinationLocation = DEST_LOCATION;
 
@@ -80,26 +80,38 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
 
   bool isLoading = true;
   bool showingBuildingPath = false;
-
+  
   @override
   void initState() {
      _beaconController.checkPermissions();
+     
+    
+    
      _beaconController.startScan();
+       _addMarkers();
      _beaconController.scanResultsStream.listen((List<ScanResult> scanResults) {
+   
+    
+    
+    
     setState(() {
       beaconCount = scanResults.length;
 
         // Print scan results to console
  
 
-
+      print(beaconCount);
 
 
 
 
     });
   });
-    // _addMarkersFromBeacons();
+
+
+
+  
+
      
     super.initState();
     getCurrentLocation();
@@ -112,7 +124,17 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
     super.dispose();
   }
 
-
+  void _addMarkers() async {
+    // Create markers based on beacon data
+    final beaconController = BeaconController();
+    final scanResults = await beaconController.scanResultsStream.first;
+    for (final scanResult in scanResults) {
+      final marker = await beaconController.createMarkerFromBeacon(scanResult);
+      setState(() {
+        _markers.add(marker!);
+      });
+    }
+  }
 
 
   void getCurrentLocation() async {
@@ -142,20 +164,7 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
     }
   }
 
-/*
- void _addMarkersFromBeacons() {
-  for (var scanResult in _beaconController.scanResults) {
-    _createMarkerAndAddToList(scanResult);
-  }
-}
 
-void _createMarkerAndAddToList(ScanResult scanResult) async {
-  var marker = await _beaconController.createMarkerFromBeacon(scanResult);
-  setState(() {
-    _markers.add(marker);
-  });
-}
-*/
   void updateLocation() async {
     GoogleMapController googleMapController = await _controller.future;
 
@@ -218,14 +227,14 @@ void _createMarkerAndAddToList(ScanResult scanResult) async {
             : GoogleMap(
                 initialCameraPosition:
                     CameraPosition(target: currentLocation, zoom: 19),
-                polylines: _polylines,
+               // polylines: _polylines,
                 markers: _markers,
                 onMapCreated: (GoogleMapController controller) {
                   _controller.complete(controller);
 
                   getCurrentLocation();
                   showMarker();
-                  //setPolylines();
+                  setPolylines();
                   updateLocation();
                 },
               ),
@@ -581,3 +590,4 @@ void _createMarkerAndAddToList(ScanResult scanResult) async {
     JIcon = await getBytesFromAsset('assets/images/J.png', 50);
   }
 }
+
