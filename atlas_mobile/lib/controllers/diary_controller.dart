@@ -34,7 +34,7 @@ class DiaryController {
   }
 
   Future<void> uploadBlob(String containerName, String blobName, List<int> bytes) async {
-    var connectionString ='DefaultEndpointsProtocol=https;AccountName=atlascamulstorage;AccountKey=IwNJ988R3R7rJ9j9vwMsls5bz9M5NC+TWO+Xs26MO3NQHkycdEtOcoye6Qado/x2tcrWWO1DY6S3+AStlqAvPA==;EndpointSuffix=core.windows.net';
+    var connectionString ='DefaultEndpointsProtocol=https;AccountName=atlasstoragecamul;AccountKey=MCChqVzGFufhs5zM5FP37omLoYFmGhg3+P6iPy7Y+rONgokdvQ9pqQJUBtrM7AA+TsZR0ogPP6gv+AStMOvr8A==;EndpointSuffix=core.windows.net';
     var storage = AzureStorage.parse(connectionString);
 
     try {

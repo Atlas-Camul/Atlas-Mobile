@@ -145,10 +145,10 @@ void _addEntry() async {
 
       try {
         // Upload the image to Azure Blob storage
-        await _controller.uploadBlob('teste', blobName, bytes);
+        await _controller.uploadBlob('atlas', blobName, bytes);
 
         // Set the media properties
-        media.url = blobName;
+        media.url = "https://atlasstoragecamul.blob.core.windows.net/atlas/messages/$blobName";
         media.type = 'image';
       } catch (e) {
         print('Error uploading image: $e');
