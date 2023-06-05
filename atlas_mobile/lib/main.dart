@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:atlas_mobile/beacon_page.dart';
+
 import 'package:atlas_mobile/diary_page.dart';
 import 'package:atlas_mobile/login_page.dart';
 import 'home_page.dart';
