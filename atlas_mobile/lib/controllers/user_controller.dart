@@ -159,6 +159,7 @@ class UserController {
       await prefs.setString('email', email);
       await prefs.setString('password', hashedPassword);
       await prefs.setInt('id', userId); // Save the user ID in shared preferences
+      
       print(userId);
 
       // Update the id and lastLogin fields in the UserModel object

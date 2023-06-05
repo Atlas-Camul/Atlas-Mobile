@@ -97,19 +97,4 @@ class _TesteState extends State<Teste> {
   }
 }
 
-void main() {
-  runApp(MyApp());
-}
 
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Google Maps Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: Teste(),
-    );
-  }
-}

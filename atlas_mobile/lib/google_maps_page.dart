@@ -93,6 +93,8 @@ class _GoogleMapsPageState extends State<GoogleMapsPage> {
   @override
   void dispose() {
     _beaconController.stopScan();
+   
+   
     super.dispose();
   }
 
@@ -124,6 +126,8 @@ Future<void> scanBeacons() async {
     _isScanning = false;
   }
 }
+
+
 
   void getCurrentLocation() async {
     //GET PERMISSION

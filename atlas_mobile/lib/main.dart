@@ -173,7 +173,7 @@ class _NavBarPageState extends State<NavBarPage> {
   Widget build(BuildContext context) {
     final tabs = {
       'HomePage': const HomePageWidget(),
-      'Beacon':BeaconPage(),
+     
       'mapa': const GoogleMapsPage(),
       'profile': const ProfilePage(),
     };
@@ -202,14 +202,7 @@ class _NavBarPageState extends State<NavBarPage> {
             label: 'Home',
             tooltip: '',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.home_outlined,
-              size: 24.0,
-            ),
-            label: 'Home',
-            tooltip: '',
-          ),
+         
           BottomNavigationBarItem(
             icon: Icon(
               Icons.map,

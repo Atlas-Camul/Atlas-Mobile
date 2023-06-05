@@ -22,7 +22,8 @@ class _LoginPageState extends State<LoginPage> {
   String? password;
 
   void _submitForm() async {
-    if (_formKey.currentState?.validate() == true && controller.validateForm() == true) {
+    if (_formKey.currentState?.validate() == true &&
+        controller.validateForm() == true) {
       try {
         // Check if user exists in the database
         final userExists = await controller.loginUser(
@@ -74,118 +75,134 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _openForgotPasswordPage() {
-    
-     Navigator.push(context, MaterialPageRoute(builder: (context) => ForgotPasswordPage()));
+    Navigator.push(context, MaterialPageRoute(builder: (context) => ForgotPasswordPage()));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
-      body: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            fit: BoxFit.fill,
-            image: AssetImage('assets/images/atlasFundo.png'),
+      body: SingleChildScrollView(
+        child: Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              fit: BoxFit.fill,
+              image: AssetImage('assets/images/atlasFundo.png'),
+            ),
           ),
-        ),
-        child: Padding(
-          padding: EdgeInsets.all(24),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(
-                  'assets/images/logo.png',
-                  width: 301,
-                  height: 198,
-                  fit: BoxFit.fitWidth,
-                ),
-                SizedBox(height: 32),
-                TextFormField(
-                  decoration: InputDecoration(
-                    labelText: 'Email',
-                    labelStyle: TextStyle(color: Colors.white),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
+          child: Padding(
+            padding: EdgeInsets.all(24),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'assets/images/logo.png',
+                    width: 301,
+                    height: 198,
+                    fit: BoxFit.fitWidth,
                   ),
-                  style: TextStyle(color: Colors.white),
-                  validator: validateEmail,
-                  onChanged: (value) {
-                    setState(() {
-                      controller.setEmail(value);
-                    });
-                  },
-                ),
-                SizedBox(height: 16),
-                TextFormField(
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    labelStyle: TextStyle(color: Colors.white),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  style: TextStyle(color: Colors.white),
-                  validator: validatePassword,
-                  onChanged: (value) {
-                    setState(() {
-                      controller.setPassword(value);
-                    });
-                  },
-                ),
-                SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    InkWell(
-                      onTap: _openRegisterPage,
-                      child: Text(
-                        'Don\'t have an account?',
-                        style: TextStyle(color: Colors.white, fontSize: 14),
+                  SizedBox(height: 32),
+                  Theme(
+                    data: Theme.of(context).copyWith(
+                      textSelectionTheme: TextSelectionThemeData(
+                        cursorColor: AppColors.backgroundColor, // Replace with your desired cursor color
                       ),
                     ),
-                    TextButton(
-                      onPressed: _submitForm,
-                      child: Text(
-                        'Login',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                      style: TextButton.styleFrom(
-                        primary: Colors.white,
-                        backgroundColor: Colors.transparent,
-                        padding: EdgeInsets.symmetric(horizontal: 24),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(50),
+                    child: TextFormField(
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                        fillColor: AppColors.backgroundColor,
+                        labelStyle: TextStyle(color: Colors.white),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white),
+                          borderRadius: BorderRadius.circular(8),
                         ),
                       ),
+                      style: TextStyle(color: Colors.white),
+                      validator: validateEmail,
+                      onChanged: (value) {
+                        setState(() {
+                          controller.setEmail(value);
+                        });
+                      },
                     ),
-                  ],
-                ),
-                SizedBox(height: 16),
-                TextButton(
-                  onPressed: _openForgotPasswordPage,
-                  child: Text(
-                    'Forgot Your Password?',
-                    style: TextStyle(color: Colors.white, fontSize: 14),
                   ),
-                ),
-              ],
+                  SizedBox(height: 16),
+                  Theme(
+                    data: Theme.of(context).copyWith(
+                      textSelectionTheme: TextSelectionThemeData(
+                        cursorColor: AppColors.backgroundColor, // Replace with your desired cursor color
+                      ),
+                    ),
+                    child: TextFormField(
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        labelText: 'Password',
+                        labelStyle: TextStyle(color: Colors.white),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      style: TextStyle(color: Colors.white),
+                      validator: validatePassword,
+                      onChanged: (value) {
+                        setState(() {
+                          controller.setPassword(value);
+                        });
+                      },
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      InkWell(
+                        onTap: _openRegisterPage,
+                        child: Text(
+                          'Don\'t have an account?',
+                          style: TextStyle(color: Colors.white, fontSize: 14),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: _submitForm,
+                        child: Text(
+                          'Login',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        style: TextButton.styleFrom(
+                          primary: Colors.white,
+                          backgroundColor: Colors.transparent,
+                          padding: EdgeInsets.symmetric(horizontal: 24),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 16),
+                  TextButton(
+                    onPressed: _openForgotPasswordPage,
+                    child: Text(
+                      'Forgot Your Password?',
+                      style: TextStyle(color: Colors.white, fontSize: 14),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -193,4 +210,3 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
-

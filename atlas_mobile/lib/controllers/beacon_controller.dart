@@ -76,7 +76,7 @@ if (latitude != null && longitude != null) {
   var marker = Marker(
     markerId: MarkerId(macAddress),
     position: LatLng(double.parse(latitude), double.parse(longitude)),
-    icon: BitmapDescriptor.defaultMarker,
+    icon: BitmapDescriptor.defaultMarker
   );
 
   return marker;

@@ -10,7 +10,7 @@ class AppColors {
   static const Color textColor = Color(0xFF000000);
   static const Color subtitleColor = Color(0xFF888888);
   static const Color dividerColor = Color(0xFFCCCCCC);
-  static const Color buttonColor = Color(0xFF4CAF50);
+  static const Color buttonColor = Color.fromRGBO(87, 2010 ,192, 100);
   static const Color errorColor = Color(0xFFE57373);
 }
 abstract class Typography {

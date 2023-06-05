@@ -5,6 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'colors/colors.dart';
 import 'diary_page.dart';
 import 'google_maps_page.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 class HomePageWidget extends StatefulWidget {
   const HomePageWidget({Key? key}) : super(key: key);
 
@@ -70,7 +72,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
             mainAxisSize: MainAxisSize.max,
             children: [
               Padding(
-            padding: EdgeInsetsDirectional.fromSTEB(20, 0, 16, 0),
+            padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 0),
               child: Row(
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -80,11 +82,11 @@ class _HomePageWidgetState extends State<HomePageWidget> {
         
         
         Image.asset(
-          'assets/images/logo.png',
-          width: 100, // Set the desired width of the image
-          height: 100, // Set the desired height of the image
-          fit: BoxFit.contain, // Adjust the image's fit as needed
-        ),
+  'assets/images/banner.png',
+  
+  width: MediaQuery.of(context).size.width,
+  fit: BoxFit.fitWidth,
+),
       
       // Add other widgets or components here if needed
     ],
@@ -106,9 +108,11 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                         'Hello',
                        style: TextStyle(
                         fontFamily: 'Outfit',
+                        fontWeight:FontWeight.w400,
+                        
                      color: Colors.black,
-                    fontSize: 26,
-                      fontWeight: FontWeight.bold,
+                    fontSize: 36,
+                      
             ),
                       ),
                     
@@ -123,13 +127,13 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                   mainAxisSize: MainAxisSize.max,
                   children:  [
                     Padding(
-                      padding: EdgeInsetsDirectional.fromSTEB(0, 16, 0, 0),
+                      padding: EdgeInsetsDirectional.fromSTEB(20, 16, 0, 0),
                       child: Align(
                        
                       child: Text(
                          name ?? '',
                          style: TextStyle(fontFamily:'Outfit',color:AppColors.primaryColor
-                                                ,fontSize: 18,fontWeight:FontWeight.bold
+                                                ,fontSize: 28,fontWeight:FontWeight.bold
                                                 )
                          
                       ),
@@ -171,7 +175,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                               width: MediaQuery.of(context).size.width * 0.86,
                               height: 100,
                               decoration: BoxDecoration(
-                                color: AppColors.accentColor,
+                                color: AppColors.buttonColor,
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Align(
@@ -356,9 +360,18 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                               hoverColor: Colors.transparent,
                               highlightColor: Colors.transparent,
                               onTap: () async {
-                                //await launchURL(
-                                //    'mailto:contact@health.ai.demo');
-                              },
+  final Uri emailUri = Uri(
+    scheme: 'mailto',
+    path: 'atlas.mobile.otp@outlook.pt',
+    queryParameters: {
+      'subject': 'Atlas',
+    },
+  );
+  //final String emailUrl = emailUri.toString();
+ 
+    await launchUrl(emailUri);
+
+},
                               child: Material(
                                 color: Colors.transparent,
                                 elevation: 3,
@@ -378,7 +391,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                                     children: [
                                       Padding(
                                         padding:
-                                            EdgeInsetsDirectional.fromSTEB(
+                                            const EdgeInsetsDirectional.fromSTEB(
                                                 15, 0, 0, 0),
                                         child: Image.asset(
                                           'assets/images/envelope.png',
@@ -390,7 +403,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                                       ),
                                       Expanded(
                                         child: Padding(
-                                          padding: EdgeInsetsDirectional
+                                          padding: const EdgeInsetsDirectional
                                               .fromSTEB(10, 15, 10, 0),
                                           child: Column(
                                             mainAxisSize: MainAxisSize.max,
@@ -447,3 +460,20 @@ class _HomePageWidgetState extends State<HomePageWidget> {
   }
 }
 
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Google Maps Demo',
+      theme: ThemeData(
+        
+      ),
+      home: HomePageWidget(),
+    );
+  }
+}
