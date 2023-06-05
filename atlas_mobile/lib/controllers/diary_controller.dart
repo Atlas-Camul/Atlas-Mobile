@@ -58,8 +58,8 @@ class DiaryController {
     );
 
     var result = await conn.query(
-      'INSERT INTO message(title, description, latitude, longitude, zoneID, userId) VALUES (?, ?, ?, ?, ?, ?)',
-      [message.title, message.description, message.latitude, message.longitude, message.zoneID, message.userId],
+      'INSERT INTO message(title, description, userId) VALUES (?, ?, ?)',
+      [message.title, message.description, message.userId],
     );
 
     print('Message inserted: $message');

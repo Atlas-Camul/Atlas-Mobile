@@ -124,9 +124,7 @@ void _addEntry() async {
       id: 0,
       title: '',
       description: text,
-      latitude: '',
-      longitude: '',
-      zoneID: 1,
+      
       userId: userId,
     );
 
@@ -167,7 +165,7 @@ void _addEntry() async {
         var bytes = await File(_audioPath).readAsBytes();
 
         // Upload the audio to Azure Blob storage
-        await _controller.uploadBlob('teste', blobName, bytes);
+        await _controller.uploadBlob('atlas-message-files', blobName, bytes);
 
         // Set the media properties
         media.url = blobName;
